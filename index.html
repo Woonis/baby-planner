@@ -397,9 +397,57 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .gr-item .gi-pct { font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:#f1ece6; color:#8a7868; }
 .gr-item .del { margin-left:auto; background:none; border:none; color:#c4b3a4; cursor:pointer; font-size:16px; }
 
+/* 데일리 기록 */
+.dr-recent { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 0; }
+.dr-rc { background:#fff; border-radius:14px; padding:14px 12px; box-shadow:0 2px 10px rgba(150,90,50,.08); text-align:center; border-top:4px solid var(--c,#e8843c); }
+.dr-rc .rc-icon { font-size:20px; } .dr-rc .rc-lbl { font-size:11px; color:#a08a78; font-weight:700; margin-top:2px; }
+.dr-rc .rc-ago { font-size:16px; font-weight:800; color:#6b4226; margin-top:3px; }
+.dr-rc .rc-time { font-size:11px; color:#a08a78; margin-top:1px; }
+.dr-addbtns { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
+.dr-add { border:none; border-radius:12px; padding:14px 6px; font-size:13.5px; font-weight:700; cursor:pointer; color:#fff; }
+.dr-add.breast { background:#ef8aa0; } .dr-add.formula { background:#f0b23c; }
+.dr-add.diaper { background:#b08968; } .dr-add.sleep { background:#8a7dc4; }
+.dr-add.temp { background:#e8663c; } .dr-add.med { background:#4a9d6a; }
+.dr-add:hover { filter:brightness(.95); }
+.dr-guide { background:#fff6ee; border:1px dashed #e8b58c; border-radius:12px; padding:12px 15px; font-size:12.5px; color:#8a5a36; margin-bottom:16px; line-height:1.6; }
+.dr-guide.over { background:#fdeeea; border-color:#e3b0a0; color:#c0502e; }
+.dr-guide b { color:#c0502e; }
+.dr-datebar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.dr-datetitle { font-size:16px; font-weight:700; color:#6b4226; }
+.dr-list { display:flex; flex-direction:column; gap:8px; }
+.dr-item { background:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 1px 6px rgba(150,90,50,.07); display:flex; align-items:center; gap:12px; border-left:4px solid var(--c,#e8843c); }
+.dr-item .di-time { font-size:13px; font-weight:700; color:#6b4226; min-width:64px; }
+.dr-item .di-icon { font-size:18px; }
+.dr-item .di-body { flex:1; min-width:0; }
+.dr-item .di-main { font-size:14px; font-weight:700; color:#4a3f34; }
+.dr-item .di-memo { font-size:12px; color:#a08a78; margin-top:1px; }
+.dr-item .di-baby { font-size:10px; }
+.dr-item .del { background:none; border:none; color:#c4b3a4; cursor:pointer; font-size:16px; }
+.dr-empty { text-align:center; color:#b0a294; font-size:13px; padding:24px; }
+/* 기록 모달 필드 */
+.rec-seg { display:flex; gap:8px; margin:6px 0 4px; }
+.rec-seg button { flex:1; border:1px solid #e3d3c4; background:#fff; color:#7a5238; font-size:14px; font-weight:700; padding:11px; border-radius:10px; cursor:pointer; }
+.rec-seg button.on { background:#e8843c; color:#fff; border-color:#e8843c; }
+.rec-num { display:flex; align-items:center; gap:10px; margin:6px 0; }
+.rec-num button { width:40px; height:40px; border-radius:10px; border:1px solid #e3d3c4; background:#fff; font-size:20px; color:#8a5a36; cursor:pointer; font-weight:700; }
+.rec-num .rec-val { flex:1; text-align:center; font-size:22px; font-weight:800; color:#6b4226; }
+.rec-two { display:flex; gap:12px; }
+.rec-two > div { flex:1; }
+.rec-two .rt-lbl { font-size:12px; color:#8a7868; font-weight:700; text-align:center; margin-bottom:4px; }
+.rec-colors { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0; }
+.rec-color { width:38px; height:38px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px #e3d3c4; cursor:pointer; }
+.rec-color.on { box-shadow:0 0 0 3px #e8843c; transform:scale(1.05); }
+.stool-info { display:none; margin-top:10px; border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.5; }
+.stool-info.show { display:block; }
+.stool-info.normal { background:#e8f5e9; color:#3a8a3e; }
+.stool-info.warn { background:#fff3e0; color:#c47d1a; }
+.stool-info.danger { background:#fdeeea; color:#c0502e; }
+.stool-info b { color:inherit; }
+
 @media (max-width: 720px) {
   .timeline { grid-template-columns: repeat(2, 1fr); }
   .maintab { font-size: 12.5px; padding: 10px 10px; }
+  .dr-addbtns { grid-template-columns: repeat(2,1fr); }
   .calcell { min-height: 78px; padding: 5px; }
   .calcell .agelbl, .calcell .dd { font-size: 8.5px; }
   .calcell .meal { font-size: 9px; }
@@ -420,6 +468,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 <nav class="mainnav">
   <div class="mainnav-inner" id="mainnav">
     <button class="maintab active" data-page="info" id="infoTab" onclick="goPage('info')">👶 우리 아기 정보</button>
+    <button class="maintab locked" data-page="daily" onclick="goPage('daily')">🍼 데일리 기록 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="vaccine" onclick="goPage('vaccine')">💉 예방접종 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="growth" onclick="goPage('growth')">📈 성장 기록 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="food" onclick="goPage('food')">🍚 이유식 <span class="lockicon">🔒</span></button>
@@ -518,6 +567,41 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 
   </div><!-- /page-food -->
 
+  <!-- 페이지: 데일리 기록 -->
+  <div class="page" id="page-daily">
+    <section style="margin-top:24px">
+      <div class="babysel" id="dailyBabySel" style="display:none"></div>
+      <h2 class="sec">데일리 기록</h2>
+      <div class="h2sub">수유·기저귀·잠을 하루 단위로 기록하고, 마지막으로 한 지 얼마나 됐는지 한눈에 확인해요.</div>
+
+      <!-- 최근 요약 -->
+      <div class="dr-recent" id="drRecent"></div>
+
+      <!-- 기록 추가 버튼 -->
+      <div class="dr-addbtns">
+        <button class="dr-add breast" onclick="openRec('breast')">🤱 모유</button>
+        <button class="dr-add formula" onclick="openRec('formula')">🍼 분유</button>
+        <button class="dr-add diaper" onclick="openRec('diaper')">🧷 기저귀</button>
+        <button class="dr-add sleep" onclick="openRec('sleep')">😴 잠자기</button>
+        <button class="dr-add temp" onclick="openRec('temp')">🌡️ 체온</button>
+        <button class="dr-add med" onclick="openRec('med')">💊 투약</button>
+      </div>
+
+      <!-- 권장 수유량 안내 -->
+      <div class="dr-guide" id="drGuide"></div>
+
+      <!-- 날짜 네비 -->
+      <div class="dr-datebar">
+        <button class="navbtn" onclick="moveDrDate(-1)">‹</button>
+        <div class="dr-datetitle" id="drDateTitle"></div>
+        <button class="navbtn" id="drDateNext" onclick="moveDrDate(1)">›</button>
+      </div>
+
+      <!-- 그날 기록 목록 -->
+      <div class="dr-list" id="drList"></div>
+    </section>
+  </div>
+
   <!-- 페이지: 예방접종 -->
   <div class="page" id="page-vaccine">
     <section style="margin-top:24px">
@@ -598,6 +682,23 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
     <div class="mbtns">
       <button class="closebtn" onclick="closeModal()">닫기</button>
       <button class="savebtn" onclick="saveMeals()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 데일리 기록 입력 모달 -->
+<div class="modal-bg" id="recModalBg" onclick="if(event.target===this)closeRec()">
+  <div class="modal">
+    <h3 id="recTitle">기록</h3>
+    <div class="msub" id="recBabyNote"></div>
+    <div class="mlabel">시각</div>
+    <input type="datetime-local" id="recTime" style="width:100%;border:1px solid #e3d3c4;border-radius:10px;padding:9px 11px;font-size:14px;color:#3a332e;background:#fff">
+    <div id="recFields"></div>
+    <div class="mlabel">메모 (선택)</div>
+    <input type="text" id="recMemo" placeholder="메모를 입력해 주세요" style="width:100%;border:1px solid #e3d3c4;border-radius:10px;padding:9px 11px;font-size:14px;color:#3a332e;background:#fff">
+    <div class="mbtns">
+      <button class="closebtn" onclick="closeRec()">닫기</button>
+      <button class="savebtn" onclick="saveRec()">저장</button>
     </div>
   </div>
 </div>
@@ -1359,6 +1460,7 @@ function resetAll(){
   localStorage.removeItem(PKEY);
   localStorage.removeItem(VKEY);
   localStorage.removeItem(GKEY);
+  localStorage.removeItem(RKEY);
   // 메모리 상태 초기화
   babies = [{ id:1, name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" }];
   activeBabyIdx = 0; setActiveBaby(0);
@@ -1367,6 +1469,7 @@ function resetAll(){
   plan = {}; calY = undefined; calM = undefined; editKey = null;
   vac = {};
   growth = [];
+  routine = []; drDate = ymd(new Date());
   // 화면 비우기
   const cntRadio = document.querySelector('input[name="babycount"][value="1"]');
   if(cntRadio) cntRadio.checked = true;
@@ -1381,6 +1484,7 @@ function resetAll(){
   renderLog();
   renderVaccine();
   renderGrowth();
+  if(typeof renderDaily==="function") renderDaily();
   alert("초기화되었어요. 우리 아기 정보를 새로 입력해 주세요.");
 }
 
@@ -1417,6 +1521,7 @@ function goPage(name){
   document.querySelectorAll('.maintab').forEach(t=>t.classList.toggle('active', t.dataset.page===name));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id==="page-"+name));
   document.getElementById("gearBtn").classList.toggle("active", name==="info");
+  if(name==="daily") renderDaily();
   if(name==="vaccine") renderVaccine();
   if(name==="growth") renderGrowth();
   if(name==="food") goSub(curSub);
@@ -1438,6 +1543,7 @@ function renderAll(){
   renderBabySelectors();
   renderTitle(); renderChip(); renderRec6(); renderTimeline(); renderMonths(); renderVaccine();
   if(typeof renderGrowth==="function") renderGrowth();
+  if(typeof renderDaily==="function") renderDaily();
 }
 // 이유식 탭 아기 선택 세그먼트(2명일 때만 표시)
 function renderBabySelectors(){
@@ -1925,6 +2031,368 @@ function renderGrowth(){
     </div>`;
   }).join("");
 }
+
+/* =========================================================
+   데일리 기록 (수유·기저귀·잠)
+   RKEY: [{id, babyId, type, ts(ms), ...필드, memo}]
+   type: breast(left,right 분) / formula(ml) / diaper(kind:pee|poo|both) / sleep(mins, nap:'day'|'night')
+   ========================================================= */
+const RKEY = "babyplanner_routine_v1";
+let routine = [];
+try { routine = JSON.parse(localStorage.getItem(RKEY)) || []; } catch(e){ routine = []; }
+function saveRoutine(){ localStorage.setItem(RKEY, JSON.stringify(routine)); }
+let drDate = ymd(new Date());   // 보고 있는 날짜
+let recType = null;             // 현재 입력 종류
+let recState = {};              // 모달 입력 상태
+
+const REC_META = {
+  breast:  {icon:"🤱", title:"모유", color:"#ef8aa0"},
+  formula: {icon:"🍼", title:"분유", color:"#f0b23c"},
+  diaper:  {icon:"🧷", title:"기저귀", color:"#b08968"},
+  sleep:   {icon:"😴", title:"잠자기", color:"#8a7dc4"},
+  temp:    {icon:"🌡️", title:"체온", color:"#e8663c"},
+  med:     {icon:"💊", title:"투약", color:"#4a9d6a"},
+};
+// 투약 약 종류 태그
+const MED_KINDS = ["해열제(아세트아미노펜)","해열제(이부프로펜)","항생제","감기약","유산균","비타민","기타"];
+// 해열제 계열별 용량·간격 (체중 kg 기준)
+const ANTIPYRETICS = {
+  "해열제(아세트아미노펜)": {mgLo:10, mgHi:15, gapLo:4, gapHi:6, ex:"타이레놀 등"},
+  "해열제(이부프로펜)":   {mgLo:5,  mgHi:10, gapLo:6, gapHi:8, ex:"부루펜·맥시부펜 등"}
+};
+// 대변 색상 (이미지 '아기 변 색깔과 건강 신호' 기반)
+// level: normal(정상) / warn(주의) / danger(즉시 병원)
+const STOOL_COLORS = [
+  // 정상
+  {v:"#e0a92e", n:"겨자색(노랑)", level:"normal", desc:"모유수유 아기의 정상 변. 약간 묽거나 몽글몽글 씨앗 같은 것이 있을 수 있어요."},
+  {v:"#d99a1e", n:"짙은 노란색", level:"normal", desc:"분유수유 아기의 정상 변. 겨자색보다 진하고 조금 더 단단한 편이에요."},
+  {v:"#d1712e", n:"주황색", level:"normal", desc:"당근·호박 등 색 강한 음식의 영향. 이유식 시작 후 나타날 수 있어요."},
+  {v:"#8a5a2b", n:"갈색", level:"normal", desc:"이유식 이후 자연스러운 색. 성인과 비슷한 변을 보기 시작해요."},
+  {v:"#9bb04a", n:"연녹색", level:"normal", desc:"주로 모유수유 아기. 전유/후유 균형 차이. 거품 있어도 잘 지내면 괜찮아요."},
+  {v:"#4a6f2a", n:"짙은 녹색", level:"normal", desc:"분유수유 시 종종 나타남. 철분·급속 소화·철분제 섭취 등이 원인이에요."},
+  {v:"#6f7a3a", n:"녹갈색", level:"normal", desc:"이유식/고형식 시작 시 보이는 색. 음식에 따라 자주 보일 수 있어요."},
+  {v:"#2f3b1f", n:"까만 녹색(태변)", level:"normal", desc:"생후 며칠 첫 응가(태변) 색. 며칠만 나오고 차차 다른 색으로 변해요."},
+  // 비정상
+  {v:"#8f9b5a", n:"점액변(코변)", level:"warn", desc:"점액이 조금이면 위험하지 않을 수 있어요. 반복되거나 다른 증상이 함께면 확인이 필요해요."},
+  {v:"#d9d4cf", n:"백색·회백색", level:"danger", desc:"간 질환 의심. 신생아 황달과 함께면 더 주의. 즉시 병원 진료가 필요해요."},
+  {v:"#b32020", n:"빨간색(혈변)", level:"danger", desc:"항문 출혈·장염·장중첩증 등 의심(모유수유 중 엄마 유두 출혈일 수도). 즉시 병원 진료가 필요해요."},
+  {v:"#1e1e1e", n:"검은색", level:"danger", desc:"생후 며칠 태변이면 정상, 그 이후면 위장 출혈 등 심각 질환 의심. 즉시 병원 진료가 필요해요."}
+];
+function stoolInfo(v){ return STOOL_COLORS.find(c=>c.v===v); }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function nowLocalInput(){ const d=new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function agoText(ms){
+  const diff = Date.now()-ms; if(diff<0) return "곧";
+  const m = Math.floor(diff/60000);
+  if(m<1) return "방금";
+  if(m<60) return `${m}분 전`;
+  const h = Math.floor(m/60);
+  if(h<24) return `${h}시간 ${m%60}분 전`;
+  const d = Math.floor(h/24);
+  return `${d}일 ${h%24}시간 전`;
+}
+function hmText(ms){ const d=new Date(ms); return `${d.getHours()>=12?'오후':'오전'} ${((d.getHours()%12)||12)}:${pad2(d.getMinutes())}`; }
+function napTypeOf(ms){ const h=new Date(ms).getHours(); return (h>=19 || h<6) ? "night" : "day"; }
+
+/* ----- 입력 모달 ----- */
+function openRec(type){
+  recType = type; recState = {};
+  const meta = REC_META[type];
+  document.getElementById("recTitle").textContent = `${meta.icon} ${meta.title} 기록`;
+  const multi = babies.length>1;
+  document.getElementById("recBabyNote").innerHTML = multi ? `<span class="babytag" style="background:${babyColor(activeBabyIdx)}">${babyName(activeBabyIdx)}</span> 기록` : "";
+  document.getElementById("recTime").value = nowLocalInput();
+  document.getElementById("recMemo").value = "";
+  const f = document.getElementById("recFields");
+  if(type==="breast"){
+    recState = {left:10, right:10};
+    f.innerHTML = `<div class="mlabel">수유 시간(분)</div>
+      <div class="rec-two">
+        <div><div class="rt-lbl">왼쪽 가슴</div><div class="rec-num"><button onclick="recAdj('left',-1)">−</button><span class="rec-val" id="recLeft">10</span><button onclick="recAdj('left',1)">＋</button></div><div class="rt-lbl">분</div></div>
+        <div><div class="rt-lbl">오른쪽 가슴</div><div class="rec-num"><button onclick="recAdj('right',-1)">−</button><span class="rec-val" id="recRight">10</span><button onclick="recAdj('right',1)">＋</button></div><div class="rt-lbl">분</div></div>
+      </div>`;
+  } else if(type==="formula"){
+    recState = {ml:60};
+    f.innerHTML = `<div class="mlabel">먹은 양(ml)</div>
+      <div class="rec-num"><button onclick="recAdj('ml',-5)">−</button><span class="rec-val" id="recMl">60</span><button onclick="recAdj('ml',5)">＋</button></div>`;
+  } else if(type==="diaper"){
+    recState = {kind:"pee", color:null};
+    f.innerHTML = `<div class="mlabel">종류</div>
+      <div class="rec-seg" id="recKind">
+        <button class="on" data-k="pee" onclick="recPickKind('pee')">소변</button>
+        <button data-k="poo" onclick="recPickKind('poo')">대변</button>
+        <button data-k="both" onclick="recPickKind('both')">둘다</button>
+      </div>
+      <div id="recColorWrap" style="display:none">
+        <div class="mlabel">대변 색상 · 정상</div>
+        <div class="rec-colors" id="recColors">${STOOL_COLORS.filter(c=>c.level==="normal").map(c=>`<button class="rec-color" data-c="${c.v}" style="background:${c.v}" title="${c.n}" onclick="recPick('color','${c.v}')"></button>`).join("")}</div>
+        <div class="mlabel" style="color:#c0502e">대변 색상 · 주의</div>
+        <div class="rec-colors">${STOOL_COLORS.filter(c=>c.level!=="normal").map(c=>`<button class="rec-color" data-c="${c.v}" style="background:${c.v}" title="${c.n}" onclick="recPick('color','${c.v}')"></button>`).join("")}</div>
+        <div class="stool-info" id="recStoolInfo"></div>
+      </div>`;
+  } else if(type==="sleep"){
+    recState = {mins:30, nap:napTypeOf(Date.now())};
+    f.innerHTML = `<div class="mlabel">잔 시간</div>
+      <div class="rec-two">
+        <div><div class="rt-lbl">시간</div><div class="rec-num"><button onclick="recAdj('h',-1)">−</button><span class="rec-val" id="recH">0</span><button onclick="recAdj('h',1)">＋</button></div></div>
+        <div><div class="rt-lbl">분</div><div class="rec-num"><button onclick="recAdj('m',-10)">−</button><span class="rec-val" id="recM">30</span><button onclick="recAdj('m',10)">＋</button></div></div>
+      </div>
+      <div class="mlabel">타입 (시작 시각 기준 자동, 바꿀 수 있어요)</div>
+      <div class="rec-seg" id="recNap">
+        <button data-k="day" class="${recState.nap==='day'?'on':''}" onclick="recPick('nap','day')">낮잠</button>
+        <button data-k="night" class="${recState.nap==='night'?'on':''}" onclick="recPick('nap','night')">밤잠</button>
+      </div>`;
+  } else if(type==="temp"){
+    recState = {temp:37.0};
+    f.innerHTML = `<div class="mlabel">체온(°C)</div>
+      <div class="rec-num"><button onclick="recAdj('temp',-1)">−</button><span class="rec-val" id="recTemp">37.0</span><button onclick="recAdj('temp',1)">＋</button></div>
+      <div class="stool-info" id="recTempInfo"></div>`;
+    setTimeout(updateTempInfo,0);
+  } else if(type==="med"){
+    recState = {mkind:null, mname:""};
+    f.innerHTML = `<div class="mlabel">약 종류</div>
+      <div class="rec-seg" id="recMed" style="flex-wrap:wrap">${MED_KINDS.map(k=>`<button data-k="${k}" onclick="recPick('mkind','${k}')" style="flex:0 0 auto;padding:9px 14px">${k}</button>`).join("")}</div>
+      <div class="mlabel">약 이름 (선택)</div>
+      <input type="text" id="recMedName" placeholder="예: 타이레놀, 이부프로펜" style="width:100%;border:1px solid #e3d3c4;border-radius:10px;padding:9px 11px;font-size:14px;color:#3a332e;background:#fff">
+      <div class="stool-info" id="recMedInfo"></div>`;
+  }
+  document.getElementById("recModalBg").classList.add("open");
+}
+function closeRec(){ document.getElementById("recModalBg").classList.remove("open"); recType=null; }
+function recAdj(key, delta){
+  if(recType==="breast"){ recState[key]=Math.max(0,(recState[key]||0)+delta); document.getElementById(key==="left"?"recLeft":"recRight").textContent=recState[key]; }
+  else if(recType==="formula"){ recState.ml=Math.max(0,(recState.ml||0)+delta); document.getElementById("recMl").textContent=recState.ml; }
+  else if(recType==="sleep"){
+    if(key==="h"){ const h=Math.max(0,Math.floor(recState.mins/60)+delta); recState.mins=h*60+(recState.mins%60); document.getElementById("recH").textContent=Math.floor(recState.mins/60); }
+    if(key==="m"){ const base=Math.floor(recState.mins/60)*60; let mm=(recState.mins%60)+delta; if(mm<0)mm=0; if(mm>59)mm=50; recState.mins=base+mm; document.getElementById("recM").textContent=recState.mins%60; }
+  }
+  else if(recType==="temp"){
+    recState.temp = Math.min(41.0, Math.max(35.0, Math.round((recState.temp + delta*0.1)*10)/10));
+    document.getElementById("recTemp").textContent = recState.temp.toFixed(1);
+    updateTempInfo();
+  }
+}
+function tempLevel(t){
+  if(t>=38.0) return {cls:"danger", txt:`🚨 고열 (${t.toFixed(1)}°C) · 38도 이상이면 소아과 상담을 권해요`};
+  if(t>=37.5) return {cls:"warn", txt:`⚠️ 미열 (${t.toFixed(1)}°C) · 상태를 지켜봐 주세요`};
+  if(t<36.0) return {cls:"warn", txt:`⚠️ 저체온 (${t.toFixed(1)}°C) · 보온·상태 확인`};
+  return {cls:"normal", txt:`✅ 정상 범위 (${t.toFixed(1)}°C)`};
+}
+function updateTempInfo(){
+  const el=document.getElementById("recTempInfo"); if(!el) return;
+  const lv=tempLevel(recState.temp);
+  el.className="stool-info show "+lv.cls; el.textContent=lv.txt;
+}
+function recPick(key,val){
+  recState[key]=val;
+  if(key==="color"){
+    document.querySelectorAll("#recColorWrap .rec-color").forEach(b=>b.classList.toggle("on", b.dataset.c===val));
+    const info = stoolInfo(val);
+    const el = document.getElementById("recStoolInfo");
+    if(info && el){
+      const cls = info.level==="danger" ? "danger" : info.level==="warn" ? "warn" : "normal";
+      const badge = info.level==="danger" ? "🚨 즉시 병원 진료 필요" : info.level==="warn" ? "⚠️ 주의" : "✅ 정상";
+      el.className = "stool-info show "+cls;
+      el.innerHTML = `<b>${info.n}</b> · ${badge}<br>${info.desc}`;
+    }
+    return;
+  }
+  const boxId = key==="kind"?"recKind":key==="mkind"?"recMed":"recNap";
+  const box = document.getElementById(boxId);
+  if(box) box.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.k===val));
+  if(key==="mkind") updateMedInfo(val);
+}
+// 해열제 계열 선택 시 체중 기반 용량·간격 안내
+function updateMedInfo(kind){
+  const el = document.getElementById("recMedInfo"); if(!el) return;
+  const ap = ANTIPYRETICS[kind];
+  if(!ap){ el.className="stool-info"; el.innerHTML=""; return; }
+  const baby = babies[activeBabyIdx] || babies[0];
+  const bg = (typeof growth!=="undefined") ? growth.filter(g=>g.babyId===baby.id && g.weight!=null).sort((a,b)=>a.date<b.date?1:-1)[0] : null;
+  let doseLine = "";
+  if(bg){
+    const lo=Math.round(bg.weight*ap.mgLo), hi=Math.round(bg.weight*ap.mgHi);
+    doseLine = `<br>⚖️ 몸무게 ${bg.weight}kg 기준 1회 <b>${lo}~${hi}mg</b> (체중×${ap.mgLo}~${ap.mgHi}mg)`;
+  } else {
+    doseLine = `<br>⚖️ 성장기록에 몸무게를 넣으면 1회 용량을 자동 계산해드려요 (체중×${ap.mgLo}~${ap.mgHi}mg)`;
+  }
+  // 다음 복용 가능 시각(같은 계열 마지막 복용 기준)
+  let nextLine = "";
+  const last = routine.filter(r=>r.type==="med" && r.babyId===baby.id && r.mkind===kind).sort((a,b)=>b.ts-a.ts)[0];
+  if(last){
+    const canAt = new Date(last.ts + ap.gapLo*3600000);
+    nextLine = `<br>⏰ 이 약 마지막 복용 ${hmText(last.ts)} · 다음 가능 <b>${hmText(canAt.getTime())}</b> 이후 (간격 ${ap.gapLo}~${ap.gapHi}시간)`;
+  }
+  // 교차복용: 다른 계열 해열제 마지막 복용 기준 최소 3시간 후
+  let crossLine = "";
+  const otherKind = Object.keys(ANTIPYRETICS).find(k=>k!==kind);
+  const lastOther = routine.filter(r=>r.type==="med" && r.babyId===baby.id && r.mkind===otherKind).sort((a,b)=>b.ts-a.ts)[0];
+  if(lastOther){
+    const crossAt = new Date(lastOther.ts + 3*3600000);
+    const now = Date.now();
+    const ok = now >= crossAt.getTime();
+    crossLine = `<br>🔁 교차복용: 다른 해열제(${otherKind.replace(/해열제\((.*)\)/,'$1')}) 마지막 ${hmText(lastOther.ts)} · ${ok?`지금 교차복용 가능`:`<b>${hmText(crossAt.getTime())}</b> 이후 가능`} (최소 3시간 간격)`;
+  } else {
+    crossLine = `<br>🔁 교차복용 시엔 다른 계열 해열제와 <b>최소 3시간</b> 간격을 두세요.`;
+  }
+  el.className="stool-info show normal";
+  el.innerHTML = `💊 ${ap.ex} · 복용 간격 ${ap.gapLo}~${ap.gapHi}시간, 하루 최대 3~4회${doseLine}${nextLine}${crossLine}<br><span style="color:#a08a78">※ 참고용. 실제 용량은 제품 라벨·소아과 안내를 따르세요.</span>`;
+}
+// 기저귀 종류 선택: 대변/둘다면 색상 팔레트 표시
+function recPickKind(val){
+  recPick("kind", val);
+  const wrap=document.getElementById("recColorWrap");
+  if(wrap){
+    if(val==="poo"||val==="both"){ wrap.style.display="block"; }
+    else {
+      wrap.style.display="none"; recState.color=null;
+      document.querySelectorAll("#recColorWrap .rec-color").forEach(x=>x.classList.remove("on"));
+      const info=document.getElementById("recStoolInfo"); if(info){ info.className="stool-info"; info.innerHTML=""; }
+    }
+  }
+}
+function saveRec(){
+  const tv = document.getElementById("recTime").value;
+  if(!tv){ alert("시각을 입력해 주세요."); return; }
+  const ts = new Date(tv).getTime();
+  const memo = document.getElementById("recMemo").value.trim();
+  const baby = babies[activeBabyIdx] || babies[0];
+  const rec = { id:Date.now(), babyId:baby.id, type:recType, ts, memo };
+  if(recType==="breast"){
+    if(!recState.left && !recState.right){ alert("왼쪽/오른쪽 수유 시간을 입력해 주세요."); return; }
+    rec.left=recState.left||0; rec.right=recState.right||0;
+  } else if(recType==="formula"){
+    if(!recState.ml){ alert("먹은 양을 입력해 주세요."); return; }
+    rec.ml=recState.ml;
+  } else if(recType==="diaper"){
+    rec.kind=recState.kind||"pee";
+    if((rec.kind==="poo"||rec.kind==="both") && recState.color) rec.color=recState.color;
+  } else if(recType==="sleep"){
+    rec.mins=recState.mins||0;
+    rec.nap = recState.nap || napTypeOf(ts);
+  } else if(recType==="temp"){
+    rec.temp = recState.temp;
+  } else if(recType==="med"){
+    const mn = (document.getElementById("recMedName")||{}).value || "";
+    if(!recState.mkind && !mn.trim()){ alert("약 종류나 이름을 입력해 주세요."); return; }
+    rec.mkind = recState.mkind || "";
+    rec.mname = mn.trim();
+  }
+  routine.push(rec);
+  saveRoutine();
+  drDate = ymd(new Date(ts)); // 기록한 날짜로 이동
+  closeRec();
+  renderDaily();
+}
+function delRoutine(id){ if(!confirm("이 기록을 삭제할까요?"))return; routine=routine.filter(r=>r.id!==id); saveRoutine(); renderDaily(); }
+function moveDrDate(delta){
+  const d=parseDate(drDate); d.setDate(d.getDate()+delta); drDate=ymd(d); renderDaily();
+}
+
+/* ----- 요약/목록/알럿 렌더 ----- */
+function recMainText(r){
+  if(r.type==="breast"){ const parts=[]; if(r.left)parts.push(`왼쪽 ${r.left}분`); if(r.right)parts.push(`오른쪽 ${r.right}분`); return "모유 · "+parts.join(", "); }
+  if(r.type==="formula") return `분유 ${r.ml}ml`;
+  if(r.type==="diaper"){
+    let extra="";
+    if(r.color){
+      const info=stoolInfo(r.color);
+      const dot=`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${r.color};vertical-align:middle;border:1px solid rgba(0,0,0,.1)"></span>`;
+      const warn = info && info.level==="danger" ? ` <span style="color:#c0502e;font-weight:700">🚨병원</span>` : (info && info.level==="warn" ? ` <span style="color:#c47d1a;font-weight:700">⚠️주의</span>` : "");
+      extra = " "+dot+warn;
+    }
+    return "기저귀 · "+({pee:"소변",poo:"대변",both:"소변+대변"}[r.kind]||"")+extra;
+  }
+  if(r.type==="sleep"){ const h=Math.floor(r.mins/60),m=r.mins%60; return `${r.nap==='night'?'밤잠':'낮잠'} ${h?h+'시간 ':''}${m}분`; }
+  if(r.type==="temp"){ const lv=tempLevel(r.temp); const w = lv.cls==="danger"?` <span style="color:#c0502e;font-weight:700">🚨</span>`:(lv.cls==="warn"?` <span style="color:#c47d1a;font-weight:700">⚠️</span>`:""); return `체온 ${r.temp.toFixed(1)}°C${w}`; }
+  if(r.type==="med"){ return "투약 · "+[r.mkind,r.mname].filter(Boolean).join(" "); }
+  return "";
+}
+// 개월별 권장 수유 표(수유텀·횟수·1회 분유량)
+function feedGuideByAge(am){
+  if(am<0.5) return {term:"2~3시간", cnt:"7~12회", ml:"60~90ml", cntMin:7, cntMax:12};
+  if(am<1)   return {term:"2~3시간", cnt:"6~8회", ml:"80~120ml", cntMin:6, cntMax:8};
+  if(am<2)   return {term:"2~3시간", cnt:"5~8회", ml:"90~150ml", cntMin:5, cntMax:8};
+  if(am<3)   return {term:"3~4시간", cnt:"5~6회", ml:"120~180ml", cntMin:5, cntMax:6};
+  if(am<6)   return {term:"3~4시간", cnt:"4~5회", ml:"150~200ml", cntMin:4, cntMax:5};
+  return null; // 이유식기
+}
+function renderDaily(){
+  if(!document.getElementById("drRecent")) return;
+  const multi = babies.length>1;
+  const baby = babies[activeBabyIdx] || babies[0];
+
+  // 아기 선택 세그먼트
+  const selEl = document.getElementById("dailyBabySel");
+  if(selEl){
+    if(multi){ selEl.style.display="flex"; selEl.innerHTML = babies.map((b,i)=>`<button class="${i===activeBabyIdx?'active':''}" style="--bc:${babyColor(i)}" onclick="selectDailyBaby(${i})">${babyName(i)}</button>`).join(""); }
+    else { selEl.style.display="none"; selEl.innerHTML=""; }
+  }
+
+  const mine = routine.filter(r=>r.babyId===baby.id);
+  // 최근 요약
+  const lastFeed = [...mine].filter(r=>r.type==="breast"||r.type==="formula").sort((a,b)=>b.ts-a.ts)[0];
+  const lastDiaper = [...mine].filter(r=>r.type==="diaper").sort((a,b)=>b.ts-a.ts)[0];
+  const lastSleep = [...mine].filter(r=>r.type==="sleep").sort((a,b)=>b.ts-a.ts)[0];
+  const card=(c,icon,lbl,rec)=>`<div class="dr-rc" style="--c:${c}"><div class="rc-icon">${icon}</div><div class="rc-lbl">${lbl}</div><div class="rc-ago">${rec?agoText(rec.ts):"-"}</div><div class="rc-time">${rec?hmText(rec.ts):"기록 없음"}</div></div>`;
+  document.getElementById("drRecent").innerHTML =
+    card("#ef8aa0","🍼","최근 수유",lastFeed) + card("#b08968","🧷","최근 기저귀",lastDiaper) + card("#8a7dc4","😴","최근 잠",lastSleep);
+
+  // 권장 수유량 안내 + 알럿 (오늘 기준)
+  const gEl = document.getElementById("drGuide");
+  const bd = parseDate(baby.birth);
+  const am = (()=>{ const dm=diffMonthsDays(bd,new Date()); return dm.months + dm.days/30.4375; })();
+  const guide = feedGuideByAge(am);
+  // 최신 몸무게(성장기록)
+  const bg = (typeof growth!=="undefined") ? growth.filter(g=>g.babyId===baby.id && g.weight!=null).sort((a,b)=>a.date<b.date?1:-1)[0] : null;
+  let gHtml = "";
+  if(guide){
+    gHtml = `📋 <b style="color:#8a5a36">지금 권장</b> — 수유텀 ${guide.term} · 하루 ${guide.cnt} · 1회 분유 ${guide.ml}`;
+    if(bg){
+      const totalMax = Math.round(bg.weight*150);
+      const once = Math.round(bg.weight*20);
+      gHtml += `<br>⚖️ 몸무게 ${bg.weight}kg 기준: 하루 총 <b>${Math.min(totalMax,1000)}ml</b> 안팎(=${bg.weight}×150), 1회 <b>${once}~${once+20}ml</b> · 하루 1,000ml 넘지 않게`;
+    }
+    // 오늘 실제 수유 횟수 대비 알럿
+    const today = ymd(new Date());
+    const todayFeeds = mine.filter(r=>(r.type==="breast"||r.type==="formula") && ymd(new Date(r.ts))===today);
+    const n = todayFeeds.length;
+    if(drDate===today && n>0){
+      if(n < guide.cntMin) gHtml += `<br>⚠️ 오늘 수유 <b>${n}회</b> — 권장(${guide.cntMin}~${guide.cntMax}회)보다 적어요.`;
+      else if(n > guide.cntMax) gHtml += `<br>⚠️ 오늘 수유 <b>${n}회</b> — 권장(${guide.cntMin}~${guide.cntMax}회)보다 많아요.`;
+      else gHtml += `<br>✅ 오늘 수유 ${n}회 — 권장 범위 안이에요.`;
+    }
+    // 분유 총량 알럿
+    const todayMl = todayFeeds.filter(r=>r.type==="formula").reduce((s,r)=>s+(r.ml||0),0);
+    if(drDate===today && todayMl>1000){ gHtml += `<br>⚠️ 오늘 분유 총 <b>${todayMl}ml</b> — 1,000ml를 넘었어요. 과식 주의.`; }
+    gEl.className = "dr-guide" + ((drDate===ymd(new Date()) && (n<guide.cntMin||n>guide.cntMax||todayMl>1000) && n>0)?" over":"");
+  } else {
+    gHtml = `📋 이유식 시기예요. 수유는 이유식 양에 따라 조절하고, 성장·소변 횟수를 함께 살펴보세요.`;
+    gEl.className = "dr-guide";
+  }
+  gEl.innerHTML = gHtml;
+
+  // 날짜 네비 + 목록
+  const dObj = parseDate(drDate);
+  const isToday = drDate===ymd(new Date());
+  document.getElementById("drDateTitle").textContent = `${dObj.getFullYear()}. ${dObj.getMonth()+1}. ${dObj.getDate()}. (${WD[dObj.getDay()]})${isToday?" · 오늘":""}`;
+  document.getElementById("drDateNext").disabled = isToday;
+
+  const dayRecs = mine.filter(r=>ymd(new Date(r.ts))===drDate).sort((a,b)=>b.ts-a.ts);
+  const listEl = document.getElementById("drList");
+  if(dayRecs.length===0){ listEl.innerHTML = `<div class="dr-empty">이 날의 기록이 없어요. 위 버튼으로 추가해 보세요 🍼</div>`; return; }
+  listEl.innerHTML = dayRecs.map(r=>{
+    const meta = REC_META[r.type];
+    const tag = multi ? `<span class="babytag di-baby" style="background:${babyColor(babies.findIndex(b=>b.id===r.babyId))}">${babyName(babies.findIndex(b=>b.id===r.babyId))}</span> ` : "";
+    return `<div class="dr-item" style="--c:${meta.color}">
+      <span class="di-time">${hmText(r.ts)}</span>
+      <span class="di-icon">${meta.icon}</span>
+      <div class="di-body"><div class="di-main">${tag}${recMainText(r)}</div>${r.memo?`<div class="di-memo">${r.memo.replace(/</g,'&lt;')}</div>`:""}</div>
+      <button class="del" onclick="delRoutine(${r.id})" title="삭제">✕</button>
+    </div>`;
+  }).join("");
+}
+function selectDailyBaby(i){ setActiveBaby(i); renderDaily(); }
 
 /* ---------- 새 재료 관찰 트래커 (아기별) ---------- */
 let data = [];
