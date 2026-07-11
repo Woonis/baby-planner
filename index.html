@@ -14,6 +14,19 @@
 :root { color-scheme: light; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overflow-x: hidden; width: 100%; max-width: 100%; }
+/* 날짜·시각 입력을 다른 입력칸과 동일 크기·정렬로 통일 */
+input[type="date"], input[type="datetime-local"], input[type="month"], input[type="time"] {
+  -webkit-appearance: none; appearance: none;
+  font-size: 14px; font-family: inherit; line-height: 1.4;
+  min-height: 40px; text-align: left; width: 100%;
+}
+input[type="date"]::-webkit-date-and-time-value,
+input[type="datetime-local"]::-webkit-date-and-time-value,
+input[type="month"]::-webkit-date-and-time-value {
+  text-align: left; font-size: 14px; margin: 0;
+}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator { margin-left: auto; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   background: #fbf7f2; color: #3a332e; line-height: 1.6; padding: 0 0 60px;
