@@ -47,6 +47,15 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
   border: 1px solid #e3d3c4; border-radius: 10px; padding: 9px 14px; cursor: pointer; background: #fff;
 }
 .sexopt input { accent-color: #e8843c; }
+/* 아기별 입력 블록 */
+.babyblock { background:#fbf3ec; border-radius:14px; padding:14px 16px; margin-bottom:14px; border-left:5px solid var(--bc,#e8843c); }
+.babyblock .bb-title { font-size:13px; font-weight:800; color:var(--bc,#e8843c); margin-bottom:10px; }
+.babyblock .fields { margin:0; }
+/* 아기 선택 세그먼트 (이유식/성장/관찰/예방접종 등) */
+.babysel { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.babysel button { border:1px solid var(--bc,#e3d3c4); background:#fff; color:var(--bc,#8a7868); font-size:13px; font-weight:700; padding:7px 14px; border-radius:20px; cursor:pointer; }
+.babysel button.active { background:var(--bc,#e8843c); color:#fff; border-color:var(--bc,#e8843c); }
+.babytag { display:inline-block; font-size:11px; font-weight:700; color:#fff; padding:1px 8px; border-radius:10px; }
 .setup .applybtn {
   background: #e8843c; color: #fff; border: none; border-radius: 10px;
   padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer;
@@ -341,6 +350,10 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .vac-item .vmeta { font-size: 12px; color: #a08a78; margin-top: 2px; }
 .vac-item .vdate { text-align: right; flex-shrink: 0; min-width: 108px; }
 .vac-item .vdate .d { font-size: 13.5px; font-weight: 700; color: #6b4226; line-height: 1.35; }
+.vac-item.multi { align-items: flex-start; border-left-color:#e3d3c4; }
+.vac-checks { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.vac-babychk { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.vac-babychk .vc-info { font-size:12px; color:#8a7868; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .vac-item .vdate .s { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 10px; display: inline-block; margin-top: 3px; }
 .s.done { background:#e8f5e9; color:#3a8a3e; }
 .s.soon { background:#fff3e0; color:#c47d1a; }
@@ -420,32 +433,19 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
   <div class="page active" id="page-info">
     <div class="setup">
       <h2>👶 우리 아기 정보</h2>
-      <div class="desc">아래 정보를 입력하고 적용하면 나머지 탭(로드맵·월별 식단·관찰 기록)이 열려요.</div>
-      <div class="fields">
-        <div class="field name">
-          <label for="babyName">태명 / 이름 (선택)</label>
-          <input type="text" id="babyName" placeholder="예: 콩이" maxlength="12">
+      <div class="desc">아래 정보를 입력하고 적용하면 나머지 탭(예방접종·성장·이유식)이 열려요.</div>
+      <div class="field" style="margin-bottom:14px">
+        <label>아이 수</label>
+        <div class="sexpick" id="countPick">
+          <label class="sexopt"><input type="radio" name="babycount" value="1" checked onchange="setBabyCount(1)"> 1명</label>
+          <label class="sexopt"><input type="radio" name="babycount" value="2" onchange="setBabyCount(2)"> 2명 (쌍둥이)</label>
         </div>
-        <div class="field">
-          <label>성별</label>
-          <div class="sexpick" id="sexPick">
-            <label class="sexopt"><input type="radio" name="sex" value="girl" checked> 여아</label>
-            <label class="sexopt"><input type="radio" name="sex" value="boy"> 남아</label>
-          </div>
-        </div>
-        <div class="field">
-          <label for="birth">출생 연·월·일</label>
-          <input type="date" id="birth">
-        </div>
-        <div class="field">
-          <label for="start">이유식 시작일</label>
-          <input type="date" id="start">
-        </div>
-        <button class="applybtn" onclick="applySetup()">적용</button>
       </div>
+      <div id="babyForms"></div>
+      <button class="applybtn" onclick="applySetup()">적용</button>
       <div class="rec6" id="rec6"></div>
       <div class="babychip" id="babyChip"></div>
-      <div class="applied" id="appliedMsg">✅ 적용됐어요! 위쪽 탭에서 로드맵·월별 식단·캘린더를 확인해 보세요.</div>
+      <div class="applied" id="appliedMsg">✅ 적용됐어요! 위쪽 탭에서 예방접종·성장·이유식을 확인해 보세요.</div>
       <div class="resetrow">
         <button class="resetbtn" onclick="resetAll()">🗑️ 전체 초기화</button>
         <span class="resethint">아기 정보·캘린더 식단·관찰 기록 등 저장된 모든 내용이 삭제돼요.</span>
@@ -455,6 +455,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 
   <!-- 페이지: 이유식 (하위 탭 컨테이너) -->
   <div class="page" id="page-food">
+    <div class="babysel" id="foodBabySel" style="margin-top:20px;display:none"></div>
     <div class="subnav" id="subnav">
       <button class="subtab active" data-sub="roadmap" onclick="goSub('roadmap')">📍 단계별 로드맵</button>
       <button class="subtab" data-sub="months" onclick="goSub('months')">🥬 월별 제철 이유식</button>
@@ -505,6 +506,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
         <div class="intro-box">
           <b>철칙</b> — ① 새 재료는 <b>한 번에 한 가지</b>만 ② <b>오전</b>에 소량으로 ③ <b>3일</b> 동안 같은 재료를 주며 반응 관찰 ④ 이상 없으면 '통과', 이상 있으면 즉시 중단하고 기록.
         </div>
+        <div class="ics-help" id="logBabyNote"></div>
         <div class="addrow">
           <input type="text" id="ingName" placeholder="새 재료 이름 (예: 단호박)" maxlength="20">
           <input type="date" id="ingDate">
@@ -543,6 +545,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 
       <!-- 입력 -->
       <div class="gr-addbox">
+        <div class="babysel" id="grBabySel" style="margin-bottom:10px;display:none"></div>
         <div class="gr-addrow">
           <div class="gr-f"><label>측정일</label><input type="date" id="grDate"></div>
           <div class="gr-f"><label>키 (cm)</label><input type="number" id="grHeight" step="0.1" min="30" max="120" placeholder="예: 62.5"></div>
@@ -715,15 +718,44 @@ function buildCombos(age, m, isFirstMonth){
   return out.slice(0,5);
 }
 
-/* ---------- 상태 ---------- */
-const SKEY = "babyfood_setup_v4";
+/* ---------- 상태 (다둥이 지원) ---------- */
+const SKEY = "babyfood_setup_v4";      // 구버전 단일 아기
+const SKEY2 = "babyplanner_babies_v1"; // 신버전 아기 배열
 const LKEY = "babyfood_ingredient_log_v1";
-let setup = { name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" };
-try { const s = JSON.parse(localStorage.getItem(SKEY)); if(s) setup = Object.assign(setup, s); } catch(e){}
-if(!setup.sex) setup.sex = "girl";
-// 구버전 호환: 연-월만 저장된 경우 일자 보정
-if(setup.birth && setup.birth.length===7) setup.birth += "-01";
-if(setup.start && setup.start.length===7) setup.start += "-01";
+const BABY_COLORS = ["#e8843c", "#5aa9d6"];
+function babyColor(i){ return BABY_COLORS[i] || "#888"; }
+
+let babies = [];
+let activeBabyIdx = 0;
+// 로드/마이그레이션
+(function loadBabies(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(SKEY2));
+    if(raw && Array.isArray(raw) && raw.length){ babies = raw; return; }
+  } catch(e){}
+  // 구버전 단일 아기 → 배열로 변환
+  try {
+    const old = JSON.parse(localStorage.getItem(SKEY));
+    if(old){
+      let b = Object.assign({ name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" }, old);
+      if(b.birth && b.birth.length===7) b.birth += "-01";
+      if(b.start && b.start.length===7) b.start += "-01";
+      if(!b.sex) b.sex = "girl";
+      b.id = 1;
+      babies = [b];
+      return;
+    }
+  } catch(e){}
+  // 기본
+  babies = [{ id:1, name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" }];
+})();
+// setup은 항상 활성 아기를 가리킴(기존 코드 호환)
+let setup = babies[activeBabyIdx];
+function setActiveBaby(i){ activeBabyIdx = i; setup = babies[activeBabyIdx]; }
+function saveBabies(){ localStorage.setItem(SKEY2, JSON.stringify(babies)); }
+function babyName(i){ return babies[i] && babies[i].name ? babies[i].name : (babies.length>1 ? `${i+1}번째 아이` : "우리 아기"); }
+
+function ymd(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function ymd(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 
 function ym(str){ const [y,mo]=str.split("-").map(Number); return {y, m:mo}; }
@@ -849,10 +881,20 @@ function selectTab(i){
 /* =========================================================
    이유식 캘린더
    ========================================================= */
-const PKEY = "babyfood_plan_v1";   // { "YYYY-MM-DD": ["식단1","식단2", ...] }
+const PKEY = "babyfood_plan_v1";   // { "babyId|YYYY-MM-DD": ["식단1", ...] }
 let plan = {};
 try { plan = JSON.parse(localStorage.getItem(PKEY)) || {}; } catch(e){ plan = {}; }
+// 구버전(날짜만 키) → 첫 아기ID 접두로 마이그레이션
+(function migratePlan(){
+  const firstId=(babies[0]&&babies[0].id)||1;
+  const keys=Object.keys(plan);
+  if(keys.some(k=>/^\d{4}-\d{2}-\d{2}$/.test(k))){
+    const np={}; keys.forEach(k=>{ np[/^\d{4}-\d{2}-\d{2}$/.test(k)?`${firstId}|${k}`:k]=plan[k]; }); plan=np;
+  }
+})();
 function savePlan(){ localStorage.setItem(PKEY, JSON.stringify(plan)); }
+// 활성 아기 기준 날짜키
+function planKey(dateKey){ const id=(babies[activeBabyIdx]&&babies[activeBabyIdx].id)||1; return `${id}|${dateKey}`; }
 
 let calY, calM; // 현재 보고 있는 달
 function startYM(){ const s = ym(setup.start); return {y:s.y, m:s.m}; }
@@ -908,7 +950,7 @@ function renderCalendar(){
     const isPre = cellDate < sd;
     const ageHere = diffMonthsDays(bd, cellDate);     // 만 N개월 M일
     const ddays = Math.round((cellDate - sd)/86400000) + 1; // 이유식 N일째 (시작일=1일째)
-    const meals = plan[key] || [];
+    const meals = plan[planKey(key)] || [];
     const range = mealRangeOf(ageHere.months);
 
     let badge = "";
@@ -987,7 +1029,7 @@ function openMeal(key){
     quick.map(q=>`<button class="qa" onclick="addMealField('${q.replace(/'/g,"\\'")}')">+ ${q}</button>`).join("");
 
   // 기존 식단 채우기
-  const meals = plan[key] || [];
+  const meals = plan[planKey(key)] || [];
   const box = document.getElementById("mMeals");
   box.innerHTML = "";
   if(meals.length===0){ addMealField(""); } else { meals.forEach(mm=>addMealField(mm)); }
@@ -1023,7 +1065,7 @@ function updateMCount(){
 }
 function saveMeals(){
   const meals = currentMeals();
-  if(meals.length===0){ delete plan[editKey]; } else { plan[editKey] = meals; }
+  if(meals.length===0){ delete plan[planKey(editKey)]; } else { plan[planKey(editKey)] = meals; }
   savePlan();
   closeModal();
   renderCalendar();
@@ -1112,7 +1154,7 @@ function downloadCalendarImage(){
     const dow = cellDate.getDay();
     const isPre = cellDate < sd;
     const key = dateKey(calY, calM, d);
-    const meals = plan[key] || [];
+    const meals = plan[planKey(key)] || [];
     const ageHere = diffMonthsDays(bd, cellDate);
     const ddays = Math.round((cellDate - sd)/86400000) + 1;
     const rg = mealRangeOf(ageHere.months);
@@ -1192,54 +1234,114 @@ function fitText(ctx, text, maxW){
 /* ---------- 셋업 적용 ---------- */
 function renderTitle(){
   const t = document.getElementById("appTitle");
-  t.textContent = setup.name ? `🍼 ${setup.name} 플래너` : "🍼 우리 아기 플래너";
+  const names = babies.map(b=>b.name).filter(Boolean);
+  if(names.length===babies.length && names.length>0){
+    t.textContent = `🍼 ${names.join("·")} 플래너`;
+  } else {
+    t.textContent = "🍼 우리 아기 플래너";
+  }
 }
 function renderChip(){
-  const bd = parseDate(setup.birth);
   const now = new Date(); now.setHours(0,0,0,0);
-  const nm = setup.name ? `${setup.name} · ` : "";
-  let agePart = "";
-  if(now >= bd){
-    const a = diffMonthsDays(bd, now);
-    agePart = ` · 오늘 만 ${a.months}개월 ${a.days}일`;
-  } else {
-    agePart = " · 출생 예정";
-  }
-  document.getElementById("babyChip").textContent =
-    `${nm}${fmtDate(bd)}생 · 전통식(떠먹이는 죽)${agePart}`;
+  const parts = babies.map((b,i)=>{
+    const bd = parseDate(b.birth);
+    const nm = b.name || (babies.length>1?`${i+1}번째 아이`:"우리 아기");
+    let agePart = now>=bd ? (()=>{const a=diffMonthsDays(bd,now);return `만 ${a.months}개월 ${a.days}일`;})() : "출생 예정";
+    const dot = babies.length>1 ? `<span class="babytag" style="background:${babyColor(i)}">${nm}</span> ` : "";
+    return `${dot}${fmtDate(bd)}생 · ${agePart}`;
+  });
+  document.getElementById("babyChip").innerHTML = parts.join("<br>");
 }
 function renderRec6(){
-  const bd = parseDate(setup.birth);
-  const sixMo = addMonths(bd, 6);
-  const fourMo = addMonths(bd, 4);
-  document.getElementById("rec6").innerHTML =
-    `🍼 <b>만 6개월: ${fmtDate(sixMo)}</b> — 이유식 시작을 추천하는 시점이에요.
-     <span class="small">아이 상태에 따라 만 4개월(${fmtDate(fourMo)}) 이후 빠르면 시작할 수도 있지만, 일반적으로 만 6개월 무렵이 권장돼요. 시작 시점은 이 달이 포함되도록 골라보세요.</span>`;
+  const html = babies.map((b,i)=>{
+    const bd = parseDate(b.birth);
+    const sixMo = addMonths(bd, 6);
+    const nm = babies.length>1 ? `<b style="color:${babyColor(i)}">${b.name||`${i+1}번째 아이`}</b> · ` : "";
+    return `${nm}🍼 <b>만 6개월: ${fmtDate(sixMo)}</b> — 이유식 시작 추천 시점`;
+  }).join("<br>");
+  document.getElementById("rec6").innerHTML = html +
+    `<span class="small">아이 상태에 따라 조금 빠를 수 있지만 일반적으로 만 6개월 무렵이 권장돼요.</span>`;
 }
-// 출생일을 입력/변경하면 만 6개월 날짜를 시작일에 자동으로 채워줌
-function onBirthChange(){
-  const birth = document.getElementById("birth").value;
+// ----- 정보 입력 폼(아기별 블록) -----
+let formCount = 1; // 현재 화면에 표시된 아기 수
+function setBabyCount(n){
+  formCount = n;
+  renderBabyForms();
+}
+function renderBabyForms(){
+  const box = document.getElementById("babyForms");
+  // 새로 생긴 칸(둘째)은 첫째의 현재 입력값으로 출생일·시작일·성별을 미리 채움(쌍둥이 편의)
+  let seed = null;
+  const firstBirthEl = document.getElementById("birth0");
+  if(firstBirthEl){
+    seed = { birth: firstBirthEl.value, start: (document.getElementById("start0")||{}).value||"",
+             sex: (document.querySelector('input[name="sex0"]:checked')||{}).value || "girl" };
+  } else if(babies[0]){
+    seed = { birth: babies[0].birth, start: babies[0].start, sex: babies[0].sex };
+  }
+  let html = "";
+  for(let i=0;i<formCount;i++){
+    let b = babies[i];
+    if(!b){ // 아직 저장 안 된 새 칸 → 첫째 값으로 시드
+      b = seed ? { name:"", birth:seed.birth, start:seed.start, sex:seed.sex } : { name:"", birth:"", start:"", sex:"girl" };
+    }
+    const col = babyColor(i);
+    const single = formCount===1;
+    html += `<div class="babyblock" style="--bc:${col}">
+      ${single ? "" : `<div class="bb-title">${i+1}번째 아이</div>`}
+      <div class="fields">
+        <div class="field name">
+          <label for="babyName${i}">태명 / 이름 (선택)</label>
+          <input type="text" id="babyName${i}" placeholder="예: 콩이" maxlength="12" value="${(b.name||'').replace(/"/g,'&quot;')}">
+        </div>
+        <div class="field">
+          <label>성별</label>
+          <div class="sexpick">
+            <label class="sexopt"><input type="radio" name="sex${i}" value="girl" ${(b.sex!=='boy')?'checked':''}> 여아</label>
+            <label class="sexopt"><input type="radio" name="sex${i}" value="boy" ${(b.sex==='boy')?'checked':''}> 남아</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="birth${i}">출생 연·월·일</label>
+          <input type="date" id="birth${i}" value="${b.birth||''}" onchange="onBirthChange(${i})">
+        </div>
+        <div class="field">
+          <label for="start${i}">이유식 시작일</label>
+          <input type="date" id="start${i}" value="${b.start||''}">
+        </div>
+      </div>
+    </div>`;
+  }
+  box.innerHTML = html;
+}
+// 출생일 입력/변경 시 만 6개월 날짜를 시작일에 자동 채움
+function onBirthChange(i){
+  const birth = document.getElementById("birth"+i).value;
   if(!birth) return;
   const sixMo = addMonths(parseDate(birth), 6);
-  document.getElementById("start").value = ymd(sixMo);
-  // 추천 박스도 즉시 갱신
-  setup.birth = birth;
-  renderRec6();
+  const startEl = document.getElementById("start"+i);
+  if(!startEl.value) startEl.value = ymd(sixMo);
+  else startEl.value = ymd(sixMo);
 }
 function applySetup(){
-  const birth = document.getElementById("birth").value;
-  const start = document.getElementById("start").value;
-  const name  = document.getElementById("babyName").value.trim();
-  const sexEl = document.querySelector('input[name="sex"]:checked');
-  const sex = sexEl ? sexEl.value : "girl";
-  if(!birth || !start){ alert("출생일과 시작일을 모두 입력해 주세요."); return; }
-  if(start < birth){ alert("시작일이 출생일보다 앞설 수 없어요."); return; }
-  setup = { name, birth, start, sex };
-  localStorage.setItem(SKEY, JSON.stringify(setup));
-  calY = undefined; calM = undefined; // 캘린더 기준월 재설정(시작월부터 다시)
+  const newBabies = [];
+  for(let i=0;i<formCount;i++){
+    const birth = document.getElementById("birth"+i).value;
+    const start = document.getElementById("start"+i).value;
+    const name  = document.getElementById("babyName"+i).value.trim();
+    const sexEl = document.querySelector(`input[name="sex${i}"]:checked`);
+    const sex = sexEl ? sexEl.value : "girl";
+    if(!birth || !start){ alert(`${formCount>1?(i+1)+"번째 아이의 ":""}출생일과 시작일을 모두 입력해 주세요.`); return; }
+    if(start < birth){ alert(`${formCount>1?(i+1)+"번째 아이의 ":""}시작일이 출생일보다 앞설 수 없어요.`); return; }
+    newBabies.push({ id:(babies[i]&&babies[i].id)||(i+1), name, birth, start, sex });
+  }
+  babies = newBabies;
+  if(activeBabyIdx >= babies.length) activeBabyIdx = 0;
+  setActiveBaby(activeBabyIdx);
+  saveBabies();
+  calY = undefined; calM = undefined; // 캘린더 기준월 재설정
   renderAll();
   unlockTabs();
-  // 정보 탭에 머물러 입력 결과(아기 정보·추천)를 바로 보여줌
   goPage("info");
   const am = document.getElementById("appliedMsg");
   am.classList.add("show");
@@ -1252,20 +1354,23 @@ function resetAll(){
   if(!confirm("저장된 모든 내용을 삭제할까요?\n\n· 우리 아기 정보\n· 캘린더 식단\n· 예방접종 기록\n· 성장 기록\n· 3일 관찰 기록\n\n이 작업은 되돌릴 수 없어요.")) return;
   // 저장 데이터 삭제
   localStorage.removeItem(SKEY);
+  localStorage.removeItem(SKEY2);
   localStorage.removeItem(LKEY);
   localStorage.removeItem(PKEY);
   localStorage.removeItem(VKEY);
   localStorage.removeItem(GKEY);
   // 메모리 상태 초기화
-  setup = { name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" };
+  babies = [{ id:1, name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" }];
+  activeBabyIdx = 0; setActiveBaby(0);
+  formCount = 1;
   data = [];
   plan = {}; calY = undefined; calM = undefined; editKey = null;
   vac = {};
   growth = [];
   // 화면 비우기
-  document.getElementById("babyName").value = "";
-  document.getElementById("birth").value = "";
-  document.getElementById("start").value = "";
+  const cntRadio = document.querySelector('input[name="babycount"][value="1"]');
+  if(cntRadio) cntRadio.checked = true;
+  renderBabyForms();
   document.getElementById("rec6").innerHTML = "";
   document.getElementById("babyChip").textContent = "";
   document.getElementById("appliedMsg").classList.remove("show");
@@ -1325,15 +1430,31 @@ function goSub(sub){
   if(sub==="calendar") renderCalendar();
 }
 function renderAll(){
-  document.getElementById("birth").value = setup.birth;
-  document.getElementById("start").value = setup.start;
-  document.getElementById("babyName").value = setup.name || "";
-  const sexRadio = document.querySelector(`input[name="sex"][value="${setup.sex||'girl'}"]`);
-  if(sexRadio) sexRadio.checked = true;
+  // 정보 폼 표시 상태 동기화
+  formCount = babies.length;
+  const cntRadio = document.querySelector(`input[name="babycount"][value="${formCount}"]`);
+  if(cntRadio) cntRadio.checked = true;
+  renderBabyForms();
+  renderBabySelectors();
   renderTitle(); renderChip(); renderRec6(); renderTimeline(); renderMonths(); renderVaccine();
   if(typeof renderGrowth==="function") renderGrowth();
 }
-document.getElementById("birth").addEventListener("change", onBirthChange);
+// 이유식 탭 아기 선택 세그먼트(2명일 때만 표시)
+function renderBabySelectors(){
+  const el = document.getElementById("foodBabySel");
+  if(!el) return;
+  if(babies.length<2){ el.innerHTML=""; el.style.display="none"; return; }
+  el.style.display="flex";
+  el.innerHTML = babies.map((b,i)=>`<button class="${i===activeBabyIdx?'active':''}" style="--bc:${babyColor(i)}" onclick="selectFoodBaby(${i})">${b.name||`${i+1}번째 아이`}</button>`).join("");
+}
+function selectFoodBaby(i){
+  setActiveBaby(i);
+  calY = undefined; calM = undefined;
+  renderBabySelectors();
+  renderTimeline(); renderMonths();
+  if(curSub==="calendar") renderCalendar();
+  if(typeof renderLog==="function") renderLog();
+}
 
 /* =========================================================
    예방접종 일정
@@ -1344,7 +1465,17 @@ document.getElementById("birth").addEventListener("change", onBirthChange);
 const VKEY = "babyfood_vaccine_v1"; // { "고유키": {done:true, actual:"YYYY-MM-DD"} }
 let vac = {};
 try { vac = JSON.parse(localStorage.getItem(VKEY)) || {}; } catch(e){ vac = {}; }
+// 구버전(단일 아기, 평면 키) → 아기ID별 구조로 마이그레이션
+(function migrateVac(){
+  const keys = Object.keys(vac);
+  const looksFlat = keys.some(k=>/^\d+_/.test(k) && vac[k] && typeof vac[k]==="object" && ("done" in vac[k] || "actual" in vac[k]));
+  if(looksFlat){
+    const firstId = (babies[0] && babies[0].id) || 1;
+    vac = { [firstId]: vac };
+  }
+})();
 function saveVac(){ localStorage.setItem(VKEY, JSON.stringify(vac)); }
+function vacFor(babyId){ if(!vac[babyId]) vac[babyId]={}; return vac[babyId]; }
 
 // group: 접종 시기 구간(정렬·구분용). offM 기준 오름차순.
 const VAC = [
@@ -1397,85 +1528,89 @@ const VAC = [
   {g:"12세", offM:144, name:"일본뇌염 불활성화 5차", note:"마지막"},
 ];
 function vacKey(v, i){ return `${i}_${v.name}`; }
-function vacDue(v){ // 예정일(범위면 시작일) 반환
-  const bd = parseDate(setup.birth);
+function vacDue(v, baby){ // 예정일(범위면 시작일)
+  const bd = parseDate((baby||setup).birth);
   let d = addMonths(bd, v.offM||0);
   if(v.offD) d = addDays(d, v.offD);
   return d;
 }
-function vacDueEnd(v){ // 범위 종료일
-  const bd = parseDate(setup.birth);
+function vacDueEnd(v, baby){ // 범위 종료일
+  const bd = parseDate((baby||setup).birth);
   if(v.offD2 !== undefined){ return addDays(addMonths(bd, v.offM||0), v.offD2); }
   if(v.offD2m !== undefined){ return addMonths(bd, v.offD2m); }
   return null;
 }
-function vacDateText(v){
-  const s = vacDue(v), e = vacDueEnd(v);
+function vacDateText(v, baby){
+  const s = vacDue(v, baby), e = vacDueEnd(v, baby);
   const f = d => `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
   if(v.yearly) return `${f(s)}~ 매년`;
   if(v.deadline) return `~${f(s)}까지`;
-  if(e) return `${f(s)} ~<br>${f(e)}`;   // 범위: 시작 ~ / 종료(두 줄)
+  if(e) return `${f(s)} ~<br>${f(e)}`;
   return f(s);
 }
-function vacStatus(v, i){
-  const st = vac[vacKey(v,i)] || {};
+function vacStatus(v, i, baby){
+  const st = vacFor(baby.id)[vacKey(v,i)] || {};
   if(st.done) return {cls:"done", txt:"완료"};
   if(v.yearly) return {cls:"upcoming", txt:"매년"};
   const today = new Date(); today.setHours(0,0,0,0);
-  const due = v.deadline ? vacDue(v) : (vacDueEnd(v) || vacDue(v)); // 마감/범위는 종료 기준
-  const start = vacDue(v);
+  const start = vacDue(v, baby);
   const diff = Math.round((start - today)/86400000);
-  if(today > (vacDueEnd(v)||vacDue(v))) return {cls:"overdue", txt:"기한 지남"};
+  if(today > (vacDueEnd(v,baby)||vacDue(v,baby))) return {cls:"overdue", txt:"기한 지남"};
   if(diff <= 30) return {cls:"soon", txt: diff<=0 ? "이번" : `D-${diff}`};
   return {cls:"upcoming", txt:"예정"};
 }
-function toggleVac(i){
-  const v = VAC[i], k = vacKey(v,i);
-  vac[k] = vac[k] || {};
-  vac[k].done = !vac[k].done;
-  if(vac[k].done && !vac[k].actual){ vac[k].actual = ymd(new Date()); }
+function toggleVac(babyId, i){
+  const v = VAC[i], k = vacKey(v,i), store = vacFor(babyId);
+  store[k] = store[k] || {};
+  store[k].done = !store[k].done;
+  if(store[k].done && !store[k].actual){ store[k].actual = ymd(new Date()); }
   saveVac(); renderVaccine();
 }
-function setActual(i){
-  const v = VAC[i], k = vacKey(v,i);
-  const cur = (vac[k] && vac[k].actual) || ymd(vacDue(v));
+function setActual(babyId, i){
+  const v = VAC[i], k = vacKey(v,i), store = vacFor(babyId);
+  const baby = babies.find(b=>b.id===babyId) || setup;
+  const cur = (store[k] && store[k].actual) || ymd(vacDue(v, baby));
   const val = prompt(`${v.name} 실제 접종일 (YYYY-MM-DD)`, cur);
   if(val===null) return;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(val.trim())){ alert("YYYY-MM-DD 형식으로 입력해 주세요."); return; }
-  vac[k] = vac[k] || {}; vac[k].actual = val.trim(); vac[k].done = true;
+  store[k] = store[k] || {}; store[k].actual = val.trim(); store[k].done = true;
   saveVac(); renderVaccine();
 }
 function renderVaccine(){
-  const bd = parseDate(setup.birth);
+  if(!document.getElementById("vacHideDone")) return;
   const hideDone = document.getElementById("vacHideDone").checked;
-
-  // 다가오는 접종 요약 (미완료 중 예정일이 오늘 이후로 가장 가까운 것들)
   const today = new Date(); today.setHours(0,0,0,0);
-  const upcoming = VAC.map((v,i)=>({v,i,due:vacDue(v)}))
-    .filter(o=>!(vac[vacKey(o.v,o.i)]||{}).done && !o.v.yearly)
-    .filter(o=> (vacDueEnd(o.v)||o.due) >= today)
-    .sort((a,b)=>a.due-b.due);
+  const multi = babies.length>1;
+
+  // 다가오는 접종 요약: 아기별로 카드 하나씩
   const upEl = document.getElementById("vacUpcoming");
-  if(upcoming.length===0){
-    upEl.innerHTML = `<div class="vac-up-card empty"><div class="u-lbl">🎉 다가오는 접종</div><div class="u-main">예정된 미완료 접종이 없어요.</div></div>`;
-  } else {
+  upEl.innerHTML = babies.map((baby,bi)=>{
+    const upcoming = VAC.map((v,i)=>({v,i,due:vacDue(v,baby)}))
+      .filter(o=>!(vacFor(baby.id)[vacKey(o.v,o.i)]||{}).done && !o.v.yearly)
+      .filter(o=> (vacDueEnd(o.v,baby)||o.due) >= today)
+      .sort((a,b)=>a.due-b.due);
+    const tag = multi ? `<span class="babytag" style="background:${babyColor(bi)}">${babyName(bi)}</span> ` : "";
+    if(upcoming.length===0){
+      return `<div class="vac-up-card empty"><div class="u-lbl">${tag}🎉 다가오는 접종</div><div class="u-main">예정된 미완료 접종이 없어요.</div></div>`;
+    }
     const next = upcoming[0];
     const sameDay = upcoming.filter(o=> ymd(o.due)===ymd(next.due));
     const names = sameDay.map(o=>o.v.name).join(", ");
     const dday = Math.round((next.due - today)/86400000);
-    upEl.innerHTML = `<div class="vac-up-card">
-      <div class="u-lbl">💉 다가오는 접종 ${dday<=0?"(지금)":`(D-${dday})`}</div>
+    return `<div class="vac-up-card">
+      <div class="u-lbl">${tag}💉 다가오는 접종 ${dday<=0?"(지금)":`(D-${dday})`}</div>
       <div class="u-main">${names}</div>
-      <div class="u-date">${vacDateText(next.v)}</div>
+      <div class="u-date">${vacDateText(next.v, baby)}</div>
     </div>`;
-  }
+  }).join("");
 
   // 그룹별 목록
   const listEl = document.getElementById("vacList");
   const groups = [];
   VAC.forEach((v,i)=>{
-    const st = vac[vacKey(v,i)]||{};
-    if(hideDone && st.done) return;
+    // 모든 아기가 완료했으면 hideDone 시 숨김
+    const allDone = babies.every(b=> (vacFor(b.id)[vacKey(v,i)]||{}).done );
+    if(hideDone && allDone) return;
     let g = groups.find(x=>x.name===v.g);
     if(!g){ g={name:v.g, items:[]}; groups.push(g); }
     g.items.push({v,i});
@@ -1484,23 +1619,29 @@ function renderVaccine(){
 
   listEl.innerHTML = groups.map(g=>{
     const rows = g.items.map(({v,i})=>{
-      const k = vacKey(v,i);
-      const st = vac[k]||{};
-      const status = vacStatus(v,i);
-      const scColor = status.cls==="done"?"#6fbf73":status.cls==="overdue"?"#c0502e":status.cls==="soon"?"#e8a33c":"#c9d6e3";
-      const actualLine = st.actual ? `<div class="vmeta">✅ 접종일 ${st.actual}</div>` : "";
       const noteLine = v.note ? `<div class="vmeta">${v.note}</div>` : "";
-      return `<div class="vac-item ${st.done?'done':''}" style="--sc:${scColor}">
-        <div class="chk ${st.done?'done':''}" onclick="toggleVac(${i})">${st.done?'✓':''}</div>
+      // 아기별 체크란 나란히
+      const checks = babies.map((baby,bi)=>{
+        const st = vacFor(baby.id)[vacKey(v,i)]||{};
+        const status = vacStatus(v,i,baby);
+        const nameTag = multi ? `<span class="babytag" style="background:${babyColor(bi)};font-size:10px">${babyName(bi)}</span>` : "";
+        const actualLine = st.actual ? `<span class="vmeta">✅ ${st.actual}</span>` : "";
+        const dateForBaby = multi ? `<span class="vmeta">${vacDateText(v,baby).replace('<br>','~')}</span>` : "";
+        return `<div class="vac-babychk">
+          <div class="chk ${st.done?'done':''}" onclick="toggleVac(${baby.id},${i})">${st.done?'✓':''}</div>
+          <div class="vc-info">${nameTag} <span class="s ${status.cls}">${status.txt}</span> ${dateForBaby} ${actualLine}
+            <button class="actualbtn" onclick="setActual(${baby.id},${i})">접종일 기록</button>
+          </div>
+        </div>`;
+      }).join("");
+      const dateBlock = multi ? "" : `<div class="vdate"><div class="d">${vacDateText(v,babies[0])}</div></div>`;
+      return `<div class="vac-item ${multi?'multi':''}">
         <div class="vbody">
           <div class="vname">${v.name}</div>
-          ${noteLine}${actualLine}
+          ${noteLine}
+          <div class="vac-checks">${checks}</div>
         </div>
-        <div class="vdate">
-          <div class="d">${vacDateText(v)}</div>
-          <span class="s ${status.cls}">${status.txt}</span><br>
-          <button class="actualbtn" onclick="setActual(${i})">접종일 기록</button>
-        </div>
+        ${dateBlock}
       </div>`;
     }).join("");
     return `<div class="vac-group"><h4>${g.name}</h4>${rows}</div>`;
@@ -1517,57 +1658,51 @@ function icsStamp(d){ // UTC 타임스탬프 YYYYMMDDTHHMMSSZ
 }
 function icsEsc(s){ return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n"); }
 function downloadVaccineICS(){
-  const hideDone = document.getElementById("vacHideDone").checked;
-  const babyName = setup.name || "우리 아기";
   const stamp = icsStamp(new Date());
+  const calName = babies.map((b,i)=>babyName(i)).join("·") + " 예방접종 일정";
   const lines = [
     "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//BabyPlanner//Vaccine//KR",
     "CALSCALE:GREGORIAN","METHOD:PUBLISH",
-    `X-WR-CALNAME:${icsEsc(babyName+" 예방접종 일정")}`,
+    `X-WR-CALNAME:${icsEsc(calName)}`,
     "X-WR-TIMEZONE:Asia/Seoul"
   ];
   let count = 0;
-  VAC.forEach((v,i)=>{
-    const st = vac[vacKey(v,i)] || {};
-    if(st.done) return;         // 완료한 접종은 제외
-    if(v.yearly) return;        // 매년 반복(독감)은 단일 일정으로 넣지 않음
-    const start = vacDue(v);
-    const end = vacDueEnd(v);
-    // 종일 이벤트: DTEND는 다음날(범위면 종료+1일)
-    const dtStart = new Date(start);
-    let dtEndExclusive = new Date(end || start);
-    dtEndExclusive.setDate(dtEndExclusive.getDate()+1);
-
-    let desc = "";
-    if(v.deadline) desc = `${icsDate(start).replace(/(\d{4})(\d{2})(\d{2})/,"$1.$2.$3")}까지 접종 권장`;
-    else if(end) desc = "권장 기간 내 접종하세요";
-    if(v.note) desc = (desc?desc+" · ":"")+v.note;
-
-    const titlePrefix = v.deadline ? "[마감] " : (end ? "[기간] " : "");
-    const uid = `vac-${i}-${icsDate(start)}@babyplanner`;
-
-    lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${uid}`);
-    lines.push(`DTSTAMP:${stamp}`);
-    lines.push(`DTSTART;VALUE=DATE:${icsDate(dtStart)}`);
-    lines.push(`DTEND;VALUE=DATE:${icsDate(dtEndExclusive)}`);
-    lines.push(`SUMMARY:${icsEsc("💉 "+titlePrefix+babyName+" "+v.name)}`);
-    if(desc) lines.push(`DESCRIPTION:${icsEsc(desc)}`);
-    // 알림(종일 이벤트 시작=자정 기준): 3일 전 09시=-2일15시간, 당일 09시=+9시간
-    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(v.name+" 접종 3일 전")}`,"TRIGGER:-P2DT15H","END:VALARM");
-    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(v.name+" 접종일")}`,"TRIGGER:PT9H","END:VALARM");
-    lines.push("END:VEVENT");
-    count++;
+  babies.forEach((baby,bi)=>{
+    const nm = babyName(bi);
+    VAC.forEach((v,i)=>{
+      const st = vacFor(baby.id)[vacKey(v,i)] || {};
+      if(st.done) return;
+      if(v.yearly) return;
+      const start = vacDue(v, baby);
+      const end = vacDueEnd(v, baby);
+      const dtStart = new Date(start);
+      let dtEndExclusive = new Date(end || start);
+      dtEndExclusive.setDate(dtEndExclusive.getDate()+1);
+      let desc = "";
+      if(v.deadline) desc = "마감일까지 접종 권장";
+      else if(end) desc = "권장 기간 내 접종하세요";
+      if(v.note) desc = (desc?desc+" · ":"")+v.note;
+      const titlePrefix = v.deadline ? "[마감] " : (end ? "[기간] " : "");
+      const uid = `vac-${baby.id}-${i}-${icsDate(start)}@babyplanner`;
+      lines.push("BEGIN:VEVENT");
+      lines.push(`UID:${uid}`);
+      lines.push(`DTSTAMP:${stamp}`);
+      lines.push(`DTSTART;VALUE=DATE:${icsDate(dtStart)}`);
+      lines.push(`DTEND;VALUE=DATE:${icsDate(dtEndExclusive)}`);
+      lines.push(`SUMMARY:${icsEsc("💉 "+titlePrefix+nm+" "+v.name)}`);
+      if(desc) lines.push(`DESCRIPTION:${icsEsc(desc)}`);
+      lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(nm+" "+v.name+" 3일 전")}`,"TRIGGER:-P2DT15H","END:VALARM");
+      lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(nm+" "+v.name+" 접종일")}`,"TRIGGER:PT9H","END:VALARM");
+      lines.push("END:VEVENT");
+      count++;
+    });
   });
   lines.push("END:VCALENDAR");
-
   if(count===0){ alert("내보낼 접종 일정이 없어요. (완료하지 않은 접종이 없습니다)"); return; }
-
-  // CRLF로 결합 (RFC5545)
   const blob = new Blob([lines.join("\r\n")], {type:"text/calendar;charset=utf-8"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = `${babyName}_예방접종일정.ics`;
+  a.href = url; a.download = `예방접종일정.ics`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
 }
@@ -1604,11 +1739,13 @@ const GROWTH = {
     ]
   }
 };
-function sexKey(){ return (setup.sex==="boy") ? "boy" : "girl"; }
-function sexLabel(){ return (setup.sex==="boy") ? "남아" : "여아"; }
-// 개월(소수 가능)에서 [M,SD] 선형보간
-function growthMSD(kind, ageMonths){
-  const arr = GROWTH[sexKey()][kind];
+function sexKeyOf(baby){ return ((baby||setup).sex==="boy") ? "boy" : "girl"; }
+function sexLabelOf(baby){ return ((baby||setup).sex==="boy") ? "남아" : "여아"; }
+function sexKey(){ return sexKeyOf(setup); }
+function sexLabel(){ return sexLabelOf(setup); }
+// 개월(소수 가능)에서 [M,SD] 선형보간 (성별 지정)
+function growthMSD(kind, ageMonths, sk){
+  const arr = GROWTH[sk||sexKey()][kind];
   const maxIdx = arr.length-1;
   let a = ageMonths; if(a<0) a=0; if(a>maxIdx) a=maxIdx;
   const lo = Math.floor(a), hi = Math.min(lo+1, maxIdx), f = a-lo;
@@ -1625,8 +1762,8 @@ function zToPercentile(z){
   p = 1-p; if(z<0) p = 1-p;
   return p*100;
 }
-function percentileOf(kind, ageMonths, value){
-  const {M,SD} = growthMSD(kind, ageMonths);
+function percentileOf(kind, ageMonths, value, sk){
+  const {M,SD} = growthMSD(kind, ageMonths, sk);
   const z = (value-M)/SD;
   return { pct: zToPercentile(z), z, M, SD };
 }
@@ -1638,120 +1775,150 @@ function pctLabel(p){
 function pctColor(p){ return p>=97?"#c0502e":p<=3?"#c47d1a":"#3a8a3e"; }
 
 /* ---------- 성장 기록 상태 ---------- */
-const GKEY = "babyfood_growth_v1"; // [{id,date,height,weight}]
+const GKEY = "babyfood_growth_v1"; // [{id,babyId,date,height,weight}]
 let growth = [];
 try { growth = JSON.parse(localStorage.getItem(GKEY)) || []; } catch(e){ growth = []; }
+// 구버전(babyId 없음) → 첫 아기에 귀속
+(function migrateGrowth(){
+  const firstId = (babies[0]&&babies[0].id)||1;
+  growth.forEach(g=>{ if(g.babyId===undefined) g.babyId = firstId; });
+})();
+let grInputBabyIdx = 0; // 입력 대상 아기
 function saveGrowth(){ localStorage.setItem(GKEY, JSON.stringify(growth)); }
-function ageMonthsAt(dateStr){
-  const bd = parseDate(setup.birth), d = parseDate(dateStr);
+function ageMonthsAtFor(dateStr, baby){
+  const bd = parseDate((baby||setup).birth), d = parseDate(dateStr);
   const dm = diffMonthsDays(bd, d);
   return dm.months + dm.days/30.4375;
 }
+function babyById(id){ return babies.find(b=>b.id===id) || babies[0]; }
 function addGrowth(){
   const date = document.getElementById("grDate").value;
   const h = parseFloat(document.getElementById("grHeight").value);
   const w = parseFloat(document.getElementById("grWeight").value);
+  const baby = babies[grInputBabyIdx] || babies[0];
   if(!date){ alert("측정일을 입력해 주세요."); return; }
   if(!h && !w){ alert("키 또는 몸무게 중 하나는 입력해 주세요."); return; }
-  if(parseDate(date) < parseDate(setup.birth)){ alert("측정일이 출생일보다 앞설 수 없어요."); return; }
-  growth.push({ id:Date.now(), date, height: h||null, weight: w||null });
+  if(parseDate(date) < parseDate(baby.birth)){ alert("측정일이 출생일보다 앞설 수 없어요."); return; }
+  growth.push({ id:Date.now(), babyId: baby.id, date, height: h||null, weight: w||null });
   growth.sort((a,b)=> a.date<b.date?-1:1);
   document.getElementById("grHeight").value="";
   document.getElementById("grWeight").value="";
   saveGrowth(); renderGrowth();
 }
 function delGrowth(id){ if(!confirm("이 기록을 삭제할까요?"))return; growth=growth.filter(g=>g.id!==id); saveGrowth(); renderGrowth(); }
+function selectGrowthBaby(i){ grInputBabyIdx=i; renderGrowth(); }
 
-/* ---------- 성장 그래프(SVG) ---------- */
+/* ---------- 성장 그래프(SVG · 다둥이 겹쳐보기) ---------- */
 function buildGrowthChart(kind){
-  const arr = GROWTH[sexKey()][kind];
+  // 밴드는 아기[0] 성별 기준
+  const bandArr = GROWTH[sexKeyOf(babies[0])][kind];
   const W=340, H=240, padL=34, padR=10, padT=10, padB=24;
   const maxMonth = 35;
-  // y 범위: 데이터 3rd~97th 전체 + 아이 기록 포함
   let yMin=Infinity, yMax=-Infinity;
-  arr.forEach(([M,SD])=>{ yMin=Math.min(yMin,M-1.88*SD); yMax=Math.max(yMax,M+1.88*SD); });
-  const pts = growth.filter(g=>g[kind]!=null).map(g=>({x:ageMonthsAt(g.date), y:g[kind]}));
-  pts.forEach(p=>{ if(p.x<=maxMonth){ yMin=Math.min(yMin,p.y); yMax=Math.max(yMax,p.y);} });
+  bandArr.forEach(([M,SD])=>{ yMin=Math.min(yMin,M-1.88*SD); yMax=Math.max(yMax,M+1.88*SD); });
+  // 아기별 기록 점
+  const perBaby = babies.map((b,bi)=>({
+    bi, color: babyColor(bi),
+    pts: growth.filter(g=>g.babyId===b.id && g[kind]!=null).map(g=>({x:ageMonthsAtFor(g.date,b), y:g[kind]})).filter(p=>p.x<=maxMonth).sort((a,b)=>a.x-b.x)
+  }));
+  perBaby.forEach(pb=>pb.pts.forEach(p=>{ yMin=Math.min(yMin,p.y); yMax=Math.max(yMax,p.y); }));
   const pad=(yMax-yMin)*0.08; yMin-=pad; yMax+=pad;
   const X = m => padL + (m/maxMonth)*(W-padL-padR);
   const Y = v => padT + (1-(v-yMin)/(yMax-yMin))*(H-padT-padB);
-  const line = (fn) => arr.map((_,m)=>`${m===0?'M':'L'}${X(m).toFixed(1)},${Y(fn(arr[m])).toFixed(1)}`).join(" ");
-  // 밴드 (3rd~97th) : z=±1.88
-  const top = arr.map((d,m)=>`${X(m).toFixed(1)},${Y(d[0]+1.88*d[1]).toFixed(1)}`).join(" ");
-  const bot = arr.map((d,m)=>`${X(m).toFixed(1)},${Y(d[0]-1.88*d[1]).toFixed(1)}`).reverse().join(" ");
+  const top = bandArr.map((d,m)=>`${X(m).toFixed(1)},${Y(d[0]+1.88*d[1]).toFixed(1)}`).join(" ");
+  const bot = bandArr.map((d,m)=>`${X(m).toFixed(1)},${Y(d[0]-1.88*d[1]).toFixed(1)}`).reverse().join(" ");
   const band = `M${top} L${bot} Z`;
-  const median = line(d=>d[0]);
-  // x축 눈금 (0,6,12,18,24,30,35)
+  const median = bandArr.map((d,m)=>`${m===0?'M':'L'}${X(m).toFixed(1)},${Y(d[0]).toFixed(1)}`).join(" ");
   const xticks = [0,6,12,18,24,30,35].map(m=>`<line x1="${X(m)}" y1="${H-padB}" x2="${X(m)}" y2="${H-padB+4}" stroke="#c9b8a6"/><text x="${X(m)}" y="${H-padB+15}" font-size="9" fill="#a08a78" text-anchor="middle">${m}</text>`).join("");
-  // y축 눈금 (5등분)
   let yticks="";
   for(let i=0;i<=4;i++){ const v=yMin+(yMax-yMin)*i/4; const yy=Y(v); yticks+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#f0e6da"/><text x="${padL-4}" y="${yy+3}" font-size="9" fill="#a08a78" text-anchor="end">${v.toFixed(kind==="weight"?1:0)}</text>`; }
-  // 아이 기록 점 + 선
-  const inPts = pts.filter(p=>p.x<=maxMonth).sort((a,b)=>a.x-b.x);
-  const babyLine = inPts.length>1 ? `<polyline points="${inPts.map(p=>`${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ")}" fill="none" stroke="#e8843c" stroke-width="2"/>` : "";
-  const dots = inPts.map(p=>`<circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="4" fill="#e8843c" stroke="#fff" stroke-width="1.5"/>`).join("");
+  const babyLines = perBaby.map(pb=>{
+    const line = pb.pts.length>1 ? `<polyline points="${pb.pts.map(p=>`${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ")}" fill="none" stroke="${pb.color}" stroke-width="2"/>` : "";
+    const dots = pb.pts.map(p=>`<circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="4" fill="${pb.color}" stroke="#fff" stroke-width="1.5"/>`).join("");
+    return line+dots;
+  }).join("");
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
     ${yticks}
     <path d="${band}" fill="#e9dcc9" opacity="0.6"/>
     <path d="${median}" fill="none" stroke="#c9a86a" stroke-width="2"/>
     ${xticks}
     <text x="${W-padR}" y="${H-2}" font-size="9" fill="#b0a294" text-anchor="end">개월</text>
-    ${babyLine}${dots}
+    ${babyLines}
   </svg>`;
 }
 
 function renderGrowth(){
   if(!document.getElementById("grDate")) return;
   if(!document.getElementById("grDate").value) document.getElementById("grDate").valueAsDate = new Date();
+  const multi = babies.length>1;
+
+  // 입력 대상 아기 선택 (2명일 때)
+  const selEl = document.getElementById("grBabySel");
+  if(selEl){
+    if(multi){
+      selEl.style.display="flex";
+      if(grInputBabyIdx>=babies.length) grInputBabyIdx=0;
+      selEl.innerHTML = `<span style="font-size:12px;color:#8a7868;align-self:center">기록할 아이:</span>` + babies.map((b,i)=>`<button class="${i===grInputBabyIdx?'active':''}" style="--bc:${babyColor(i)}" onclick="selectGrowthBaby(${i})">${babyName(i)}</button>`).join("");
+    } else { selEl.style.display="none"; selEl.innerHTML=""; }
+  }
 
   // 그래프
   document.getElementById("grHeightChart").innerHTML = buildGrowthChart("height");
   document.getElementById("grWeightChart").innerHTML = buildGrowthChart("weight");
 
-  // 최신 측정 요약
+  // 최신 측정 요약 (아기별)
   const sumEl = document.getElementById("grSummary");
-  const latestH = [...growth].reverse().find(g=>g.height!=null);
-  const latestW = [...growth].reverse().find(g=>g.weight!=null);
-  if(!latestH && !latestW){
-    sumEl.innerHTML = `<div class="gr-empty">아직 기록이 없어요. 아래에서 키·몸무게를 입력하면 또래(${sexLabel()}) 평균과 비교해드려요 🌱</div>`;
-  } else {
-    let cards = "";
+  let cards = "";
+  babies.forEach((baby,bi)=>{
+    const sk = sexKeyOf(baby), sl = sexLabelOf(baby), col0 = babyColor(bi);
+    const bg = growth.filter(g=>g.babyId===baby.id);
+    const latestH = [...bg].reverse().find(g=>g.height!=null);
+    const latestW = [...bg].reverse().find(g=>g.weight!=null);
+    const tag = multi ? `<span class="babytag" style="background:${col0}">${babyName(bi)}</span> ` : "";
+    if(!latestH && !latestW){
+      if(bi===0 || multi) cards += `<div class="gr-empty">${tag}아직 기록이 없어요. 키·몸무게를 입력하면 또래(${sl}) 평균과 비교해드려요 🌱</div>`;
+      return;
+    }
     if(latestH){
-      const a = ageMonthsAt(latestH.date);
-      const r = percentileOf("height", a, latestH.height);
+      const a = ageMonthsAtFor(latestH.date, baby);
+      const r = percentileOf("height", a, latestH.height, sk);
       const lab = pctLabel(r.pct), col=pctColor(r.pct);
-      cards += `<div class="gr-card" style="--c:${col}">
-        <div class="gc-lbl">📏 키 · ${latestH.date}</div>
+      cards += `<div class="gr-card" style="--c:${multi?col0:col}">
+        <div class="gc-lbl">${tag}📏 키 · ${latestH.date}</div>
         <div class="gc-val">${latestH.height} cm</div>
         <div class="gc-pct" style="color:${col}">${lab.txt}</div>
-        <div class="gc-note">만 ${Math.floor(a)}개월 ${sexLabel()} 평균 ${r.M.toFixed(1)}cm · 우리 아기 ${latestH.height>r.M?'+':''}${(latestH.height-r.M).toFixed(1)}cm</div>
+        <div class="gc-note">만 ${Math.floor(a)}개월 ${sl} 평균 ${r.M.toFixed(1)}cm · ${latestH.height>r.M?'+':''}${(latestH.height-r.M).toFixed(1)}cm</div>
       </div>`;
     }
     if(latestW){
-      const a = ageMonthsAt(latestW.date);
-      const r = percentileOf("weight", a, latestW.weight);
+      const a = ageMonthsAtFor(latestW.date, baby);
+      const r = percentileOf("weight", a, latestW.weight, sk);
       const lab = pctLabel(r.pct), col=pctColor(r.pct);
-      cards += `<div class="gr-card" style="--c:${col}">
-        <div class="gc-lbl">⚖️ 몸무게 · ${latestW.date}</div>
+      cards += `<div class="gr-card" style="--c:${multi?col0:col}">
+        <div class="gc-lbl">${tag}⚖️ 몸무게 · ${latestW.date}</div>
         <div class="gc-val">${latestW.weight} kg</div>
         <div class="gc-pct" style="color:${col}">${lab.txt}</div>
-        <div class="gc-note">만 ${Math.floor(a)}개월 ${sexLabel()} 평균 ${r.M.toFixed(1)}kg · 우리 아기 ${latestW.weight>r.M?'+':''}${(latestW.weight-r.M).toFixed(1)}kg</div>
+        <div class="gc-note">만 ${Math.floor(a)}개월 ${sl} 평균 ${r.M.toFixed(1)}kg · ${latestW.weight>r.M?'+':''}${(latestW.weight-r.M).toFixed(1)}kg</div>
       </div>`;
     }
-    sumEl.innerHTML = cards;
-  }
+  });
+  sumEl.innerHTML = cards || `<div class="gr-empty">아직 기록이 없어요 🌱</div>`;
 
   // 기록 목록 (최신순)
   const listEl = document.getElementById("grList");
   if(growth.length===0){ listEl.innerHTML=""; return; }
   listEl.innerHTML = [...growth].reverse().map(g=>{
-    const a = ageMonthsAt(g.date);
-    const dm = diffMonthsDays(parseDate(setup.birth), parseDate(g.date));
+    const bi = babies.findIndex(b=>b.id===g.babyId);
+    const baby = bi>=0?babies[bi]:babies[0];
+    const sk = sexKeyOf(baby);
+    const a = ageMonthsAtFor(g.date, baby);
+    const dm = diffMonthsDays(parseDate(baby.birth), parseDate(g.date));
+    const tag = multi ? `<span class="babytag" style="background:${babyColor(bi>=0?bi:0)}">${babyName(bi>=0?bi:0)}</span>` : "";
     let vals = [];
-    if(g.height!=null){ const r=percentileOf("height",a,g.height); vals.push(`<span class="gi-val">키 <b>${g.height}</b>cm <span class="gi-pct" style="color:${pctColor(r.pct)}">${r.pct>=97?'97%↑':r.pct<=3?'3%↓':'상위'+(100-r.pct).toFixed(0)+'%'}</span></span>`); }
-    if(g.weight!=null){ const r=percentileOf("weight",a,g.weight); vals.push(`<span class="gi-val">몸무게 <b>${g.weight}</b>kg <span class="gi-pct" style="color:${pctColor(r.pct)}">${r.pct>=97?'97%↑':r.pct<=3?'3%↓':'상위'+(100-r.pct).toFixed(0)+'%'}</span></span>`); }
+    if(g.height!=null){ const r=percentileOf("height",a,g.height,sk); vals.push(`<span class="gi-val">키 <b>${g.height}</b>cm <span class="gi-pct" style="color:${pctColor(r.pct)}">${r.pct>=97?'97%↑':r.pct<=3?'3%↓':'상위'+(100-r.pct).toFixed(0)+'%'}</span></span>`); }
+    if(g.weight!=null){ const r=percentileOf("weight",a,g.weight,sk); vals.push(`<span class="gi-val">몸무게 <b>${g.weight}</b>kg <span class="gi-pct" style="color:${pctColor(r.pct)}">${r.pct>=97?'97%↑':r.pct<=3?'3%↓':'상위'+(100-r.pct).toFixed(0)+'%'}</span></span>`); }
     return `<div class="gr-item">
-      <span class="gi-date">${g.date}</span>
+      ${tag}<span class="gi-date">${g.date}</span>
       <span class="gi-age">만 ${dm.months}개월 ${dm.days}일</span>
       ${vals.join("")}
       <button class="del" onclick="delGrowth(${g.id})" title="삭제">✕</button>
@@ -1759,16 +1926,19 @@ function renderGrowth(){
   }).join("");
 }
 
-/* ---------- 새 재료 관찰 트래커 ---------- */
+/* ---------- 새 재료 관찰 트래커 (아기별) ---------- */
 let data = [];
 try { data = JSON.parse(localStorage.getItem(LKEY)) || []; } catch(e){ data = []; }
+// 구버전(babyId 없음) → 첫 아기 귀속
+(function migrateLog(){ const firstId=(babies[0]&&babies[0].id)||1; data.forEach(d=>{ if(d.babyId===undefined) d.babyId=firstId; }); })();
 document.getElementById("ingDate").valueAsDate = new Date();
 function saveLog(){ localStorage.setItem(LKEY, JSON.stringify(data)); }
 function addIngredient(){
   const nm = document.getElementById("ingName").value.trim();
   const dt = document.getElementById("ingDate").value;
+  const baby = babies[activeBabyIdx] || babies[0];
   if(!nm){ alert("재료 이름을 입력해 주세요."); return; }
-  data.unshift({ id: Date.now(), name: nm, date: dt, days:[false,false,false], reaction:false });
+  data.unshift({ id: Date.now(), babyId: baby.id, name: nm, date: dt, days:[false,false,false], reaction:false });
   document.getElementById("ingName").value = "";
   saveLog(); renderLog();
 }
@@ -1782,8 +1952,15 @@ function statusOf(it){
 }
 function renderLog(){
   const log = document.getElementById("log");
-  if(data.length===0){ log.innerHTML = `<li class="empty">아직 기록이 없어요. 첫 재료를 추가해 보세요 🌱</li>`; return; }
-  log.innerHTML = data.map(it=>{
+  if(!log) return;
+  const multi = babies.length>1;
+  const baby = babies[activeBabyIdx] || babies[0];
+  // 관찰 기록 안내(누구 기록인지)
+  const noteEl = document.getElementById("logBabyNote");
+  if(noteEl) noteEl.innerHTML = multi ? `현재 <span class="babytag" style="background:${babyColor(activeBabyIdx)}">${babyName(activeBabyIdx)}</span> 의 기록이에요. 위 '이유식' 탭 상단에서 아이를 바꿀 수 있어요.` : "";
+  const list = data.filter(it=> !multi || it.babyId===baby.id);
+  if(list.length===0){ log.innerHTML = `<li class="empty">아직 기록이 없어요. 첫 재료를 추가해 보세요 🌱</li>`; return; }
+  log.innerHTML = list.map(it=>{
     const st = statusOf(it);
     const days = it.days.map((d,i)=>`<button class="day${d?' done':''}" onclick="toggleDay(${it.id},${i})">${i+1}일</button>`).join("");
     return `<li class="logitem">
@@ -1800,7 +1977,7 @@ function renderLog(){
 renderAll();
 renderLog();
 // 이전에 정보를 적용·저장한 적이 있으면 탭을 미리 열고 첫 탭(예방접종)으로 시작
-if(localStorage.getItem(SKEY)){ unlockTabs(); goPage("vaccine"); }
+if(localStorage.getItem(SKEY2) || localStorage.getItem(SKEY)){ unlockTabs(); goPage("vaccine"); }
 </script>
 </body>
 </html>
