@@ -41,6 +41,12 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
 }
 .field input:focus { outline: 2px solid #f0b88f; }
 .field.name input { min-width: 130px; }
+.sexpick { display: flex; gap: 8px; }
+.sexopt {
+  display: flex; align-items: center; gap: 5px; font-size: 14px; color: #6b4226;
+  border: 1px solid #e3d3c4; border-radius: 10px; padding: 9px 14px; cursor: pointer; background: #fff;
+}
+.sexopt input { accent-color: #e8843c; }
 .setup .applybtn {
   background: #e8843c; color: #fff; border: none; border-radius: 10px;
   padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer;
@@ -343,6 +349,41 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .vac-item .actualbtn { font-size:11px; border:1px solid #cfe0cc; background:#f2f9f1; color:#3a8a3e; border-radius:7px; padding:4px 8px; cursor:pointer; white-space:nowrap; }
 .vac-note { font-size: 12px; color: #b0a294; margin-top: 16px; line-height: 1.6; }
 
+/* 성장 기록 */
+.gr-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.gr-card { background:#fff; border-radius:14px; padding:14px 16px; box-shadow:0 2px 10px rgba(150,90,50,.08); border-top:4px solid var(--c,#c9a86a); }
+.gr-card .gc-lbl { font-size:12px; color:#a08a78; font-weight:700; }
+.gr-card .gc-val { font-size:22px; font-weight:800; color:#6b4226; margin:2px 0; }
+.gr-card .gc-pct { font-size:13px; font-weight:700; }
+.gr-card .gc-note { font-size:11.5px; color:#8a7868; margin-top:3px; line-height:1.4; }
+.gr-summary .gr-empty { grid-column:1/-1; background:#fff6ee; border:1px dashed #e8b58c; border-radius:12px; padding:16px; font-size:13px; color:#8a5a36; text-align:center; }
+
+.gr-addbox { background:#fff; border-radius:14px; padding:14px 16px; box-shadow:0 2px 10px rgba(150,90,50,.08); margin-bottom:18px; }
+.gr-addrow { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+.gr-f { display:flex; flex-direction:column; gap:4px; flex:1; min-width:110px; }
+.gr-f label { font-size:12px; color:#8a7868; font-weight:600; }
+.gr-f input { border:1px solid #e3d3c4; border-radius:10px; padding:9px 11px; font-size:14px; color:#3a332e; background:#fff; }
+.gr-f input:focus { outline:2px solid #f0b88f; }
+.gr-addbtn { background:#e8843c; color:#fff; border:none; border-radius:10px; padding:10px 20px; font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.gr-addbtn:hover { background:#d9742e; }
+
+.gr-charts { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.gr-chart { background:#fff; border-radius:14px; padding:14px; box-shadow:0 2px 10px rgba(150,90,50,.08); }
+.gr-chart-title { font-size:14px; font-weight:700; color:#6b4226; margin-bottom:8px; }
+.gr-chart svg { width:100%; height:auto; display:block; }
+.gr-legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#8a7868; margin:12px 2px 4px; }
+.gr-legend i { display:inline-block; width:14px; height:10px; border-radius:3px; vertical-align:middle; margin-right:4px; }
+.gr-legend i.dot { width:10px; height:10px; border-radius:50%; background:#e8843c; }
+
+.gr-list { margin-top:16px; }
+.gr-item { background:#fff; border-radius:12px; padding:12px 15px; margin-bottom:8px; box-shadow:0 1px 6px rgba(150,90,50,.07); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.gr-item .gi-date { font-size:13px; font-weight:700; color:#6b4226; min-width:96px; }
+.gr-item .gi-age { font-size:11.5px; color:#a08a78; }
+.gr-item .gi-val { font-size:13px; color:#5a4d40; }
+.gr-item .gi-val b { color:#6b4226; }
+.gr-item .gi-pct { font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:#f1ece6; color:#8a7868; }
+.gr-item .del { margin-left:auto; background:none; border:none; color:#c4b3a4; cursor:pointer; font-size:16px; }
+
 @media (max-width: 720px) {
   .timeline { grid-template-columns: repeat(2, 1fr); }
   .maintab { font-size: 12.5px; padding: 10px 10px; }
@@ -351,6 +392,8 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
   .calcell .meal { font-size: 9px; }
   .vac-item { flex-wrap: wrap; }
   .vac-item .vdate { text-align: left; }
+  .gr-charts { grid-template-columns: 1fr; }
+  .gr-summary { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -365,6 +408,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
   <div class="mainnav-inner" id="mainnav">
     <button class="maintab active" data-page="info" id="infoTab" onclick="goPage('info')">👶 우리 아기 정보</button>
     <button class="maintab locked" data-page="vaccine" onclick="goPage('vaccine')">💉 예방접종 <span class="lockicon">🔒</span></button>
+    <button class="maintab locked" data-page="growth" onclick="goPage('growth')">📈 성장 기록 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="food" onclick="goPage('food')">🍚 이유식 <span class="lockicon">🔒</span></button>
     <button class="gearbtn" id="gearBtn" onclick="goPage('info')" title="우리 아기 정보 · 설정">⚙️</button>
   </div>
@@ -381,6 +425,13 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
         <div class="field name">
           <label for="babyName">태명 / 이름 (선택)</label>
           <input type="text" id="babyName" placeholder="예: 콩이" maxlength="12">
+        </div>
+        <div class="field">
+          <label>성별</label>
+          <div class="sexpick" id="sexPick">
+            <label class="sexopt"><input type="radio" name="sex" value="girl" checked> 여아</label>
+            <label class="sexopt"><input type="radio" name="sex" value="boy"> 남아</label>
+          </div>
         </div>
         <div class="field">
           <label for="birth">출생 연·월·일</label>
@@ -478,6 +529,48 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
       <div class="ics-help">버튼을 누르면 접종 일정 파일(.ics)이 저장돼요. 휴대폰에서 열어 캘린더에 추가하면 <b>3일 전·당일 아침</b>에 알림을 받을 수 있어요.</div>
       <div class="vac-list" id="vacList"></div>
       <div class="vac-note">※ 질병관리청 표준예방접종일정을 바탕으로 한 참고용이에요. 접종 시기·백신 종류는 아이 상태에 따라 달라질 수 있으니 보건소·소아청소년과의 안내를 따르세요.</div>
+    </section>
+  </div>
+
+  <!-- 페이지: 성장 기록 -->
+  <div class="page" id="page-growth">
+    <section style="margin-top:24px">
+      <h2 class="sec">성장 기록</h2>
+      <div class="h2sub">키·체중을 기록하면 2017 소아청소년 성장도표(같은 성별 또래) 곡선 위에 표시되고, 평균 대비 어느 정도인지 알려드려요.</div>
+
+      <!-- 최신 측정 요약 -->
+      <div class="gr-summary" id="grSummary"></div>
+
+      <!-- 입력 -->
+      <div class="gr-addbox">
+        <div class="gr-addrow">
+          <div class="gr-f"><label>측정일</label><input type="date" id="grDate"></div>
+          <div class="gr-f"><label>키 (cm)</label><input type="number" id="grHeight" step="0.1" min="30" max="120" placeholder="예: 62.5"></div>
+          <div class="gr-f"><label>몸무게 (kg)</label><input type="number" id="grWeight" step="0.01" min="1" max="25" placeholder="예: 6.4"></div>
+          <button class="gr-addbtn" onclick="addGrowth()">기록 추가</button>
+        </div>
+      </div>
+
+      <!-- 그래프 -->
+      <div class="gr-charts">
+        <div class="gr-chart">
+          <div class="gr-chart-title">📏 키 (cm)</div>
+          <div id="grHeightChart"></div>
+        </div>
+        <div class="gr-chart">
+          <div class="gr-chart-title">⚖️ 몸무게 (kg)</div>
+          <div id="grWeightChart"></div>
+        </div>
+      </div>
+      <div class="gr-legend">
+        <span><i style="background:#e9dcc9"></i> 또래 정상 범위(3~97%)</span>
+        <span><i style="background:#c9a86a"></i> 평균(50%)</span>
+        <span><i class="dot"></i> 우리 아기 기록</span>
+      </div>
+
+      <!-- 기록 목록 -->
+      <div class="gr-list" id="grList"></div>
+      <div class="vac-note">※ 2017 소아청소년 성장도표(질병관리청·WHO 기준) 백분위를 참고용으로 사용했어요. 성장 평가는 소아청소년과 전문의와 상담하세요.</div>
     </section>
   </div>
 
@@ -625,8 +718,9 @@ function buildCombos(age, m, isFirstMonth){
 /* ---------- 상태 ---------- */
 const SKEY = "babyfood_setup_v4";
 const LKEY = "babyfood_ingredient_log_v1";
-let setup = { name:"", birth:"2026-07-15", start:"2027-01-15" };
+let setup = { name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" };
 try { const s = JSON.parse(localStorage.getItem(SKEY)); if(s) setup = Object.assign(setup, s); } catch(e){}
+if(!setup.sex) setup.sex = "girl";
 // 구버전 호환: 연-월만 저장된 경우 일자 보정
 if(setup.birth && setup.birth.length===7) setup.birth += "-01";
 if(setup.start && setup.start.length===7) setup.start += "-01";
@@ -1136,9 +1230,11 @@ function applySetup(){
   const birth = document.getElementById("birth").value;
   const start = document.getElementById("start").value;
   const name  = document.getElementById("babyName").value.trim();
+  const sexEl = document.querySelector('input[name="sex"]:checked');
+  const sex = sexEl ? sexEl.value : "girl";
   if(!birth || !start){ alert("출생일과 시작일을 모두 입력해 주세요."); return; }
   if(start < birth){ alert("시작일이 출생일보다 앞설 수 없어요."); return; }
-  setup = { name, birth, start };
+  setup = { name, birth, start, sex };
   localStorage.setItem(SKEY, JSON.stringify(setup));
   calY = undefined; calM = undefined; // 캘린더 기준월 재설정(시작월부터 다시)
   renderAll();
@@ -1153,17 +1249,19 @@ function applySetup(){
 
 /* ---------- 전체 초기화 ---------- */
 function resetAll(){
-  if(!confirm("저장된 모든 내용을 삭제할까요?\n\n· 우리 아기 정보\n· 캘린더 식단\n· 예방접종 기록\n· 3일 관찰 기록\n\n이 작업은 되돌릴 수 없어요.")) return;
+  if(!confirm("저장된 모든 내용을 삭제할까요?\n\n· 우리 아기 정보\n· 캘린더 식단\n· 예방접종 기록\n· 성장 기록\n· 3일 관찰 기록\n\n이 작업은 되돌릴 수 없어요.")) return;
   // 저장 데이터 삭제
   localStorage.removeItem(SKEY);
   localStorage.removeItem(LKEY);
   localStorage.removeItem(PKEY);
   localStorage.removeItem(VKEY);
+  localStorage.removeItem(GKEY);
   // 메모리 상태 초기화
-  setup = { name:"", birth:"2026-07-15", start:"2027-01-15" };
+  setup = { name:"", birth:"2026-07-15", start:"2027-01-15", sex:"girl" };
   data = [];
   plan = {}; calY = undefined; calM = undefined; editKey = null;
   vac = {};
+  growth = [];
   // 화면 비우기
   document.getElementById("babyName").value = "";
   document.getElementById("birth").value = "";
@@ -1177,6 +1275,7 @@ function resetAll(){
   goPage("info");
   renderLog();
   renderVaccine();
+  renderGrowth();
   alert("초기화되었어요. 우리 아기 정보를 새로 입력해 주세요.");
 }
 
@@ -1214,6 +1313,7 @@ function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id==="page-"+name));
   document.getElementById("gearBtn").classList.toggle("active", name==="info");
   if(name==="vaccine") renderVaccine();
+  if(name==="growth") renderGrowth();
   if(name==="food") goSub(curSub);
   window.scrollTo({top:0, behavior:"smooth"});
 }
@@ -1228,7 +1328,10 @@ function renderAll(){
   document.getElementById("birth").value = setup.birth;
   document.getElementById("start").value = setup.start;
   document.getElementById("babyName").value = setup.name || "";
+  const sexRadio = document.querySelector(`input[name="sex"][value="${setup.sex||'girl'}"]`);
+  if(sexRadio) sexRadio.checked = true;
   renderTitle(); renderChip(); renderRec6(); renderTimeline(); renderMonths(); renderVaccine();
+  if(typeof renderGrowth==="function") renderGrowth();
 }
 document.getElementById("birth").addEventListener("change", onBirthChange);
 
@@ -1467,6 +1570,193 @@ function downloadVaccineICS(){
   a.href = url; a.download = `${babyName}_예방접종일정.ics`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+/* =========================================================
+   성장 기록 (2017 소아청소년 성장도표 · WHO 기반)
+   월(0~35)별 중앙값(M=50th)과 근사 표준편차(SD).
+   백분위 밴드/평가는 정규근사(z-score)로 계산.
+   ========================================================= */
+// [M(중앙값), SD] 배열, index=개월(0..35)
+const GROWTH = {
+  girl: {
+    height: [ // cm (신장)
+      [49.1,1.9],[53.7,2.0],[57.1,2.1],[59.8,2.1],[62.1,2.2],[64.0,2.2],[65.7,2.3],[67.3,2.3],[68.7,2.4],[70.1,2.4],[71.5,2.5],[72.8,2.5],
+      [74.0,2.5],[75.2,2.6],[76.4,2.6],[77.5,2.7],[78.6,2.7],[79.7,2.8],[80.7,2.8],[81.7,2.9],[82.7,2.9],[83.7,3.0],[84.6,3.0],[85.5,3.1],
+      [86.4,3.1],[87.4,3.2],[88.3,3.2],[89.1,3.3],[90.0,3.3],[90.9,3.4],[91.7,3.4],[92.5,3.5],[93.4,3.5],[94.2,3.6],[95.0,3.6],[95.8,3.7]
+    ],
+    weight: [ // kg (체중)
+      [3.2,0.40],[4.2,0.48],[5.1,0.55],[5.8,0.61],[6.4,0.66],[6.9,0.70],[7.3,0.74],[7.6,0.78],[7.9,0.81],[8.2,0.84],[8.5,0.87],[8.7,0.90],
+      [8.9,0.92],[9.2,0.95],[9.4,0.98],[9.6,1.00],[9.8,1.03],[10.0,1.05],[10.2,1.08],[10.4,1.10],[10.6,1.13],[10.9,1.15],[11.1,1.18],[11.3,1.20],
+      [11.5,1.23],[11.7,1.25],[11.9,1.28],[12.1,1.30],[12.3,1.33],[12.5,1.35],[12.7,1.38],[12.9,1.40],[13.1,1.43],[13.3,1.45],[13.5,1.48],[13.7,1.50]
+    ]
+  },
+  boy: {
+    height: [
+      [49.9,1.9],[54.7,2.0],[58.4,2.1],[61.4,2.1],[63.9,2.2],[65.9,2.2],[67.6,2.3],[69.2,2.3],[70.6,2.4],[72.0,2.4],[73.3,2.5],[74.5,2.5],
+      [75.7,2.6],[76.9,2.6],[78.0,2.7],[79.1,2.7],[80.2,2.8],[81.2,2.8],[82.3,2.9],[83.2,2.9],[84.2,3.0],[85.1,3.0],[86.0,3.1],[86.9,3.1],
+      [87.8,3.2],[88.6,3.2],[89.4,3.3],[90.2,3.3],[91.0,3.4],[91.8,3.4],[92.6,3.5],[93.4,3.5],[94.1,3.6],[94.9,3.6],[95.6,3.7],[96.3,3.7]
+    ],
+    weight: [
+      [3.3,0.42],[4.5,0.51],[5.6,0.58],[6.4,0.64],[7.0,0.69],[7.5,0.73],[7.9,0.77],[8.3,0.81],[8.6,0.84],[8.9,0.87],[9.2,0.90],[9.4,0.93],
+      [9.6,0.95],[9.9,0.98],[10.1,1.01],[10.3,1.03],[10.5,1.06],[10.7,1.08],[10.9,1.11],[11.1,1.13],[11.3,1.16],[11.5,1.18],[11.8,1.21],[12.0,1.23],
+      [12.2,1.26],[12.4,1.28],[12.5,1.31],[12.7,1.33],[12.9,1.36],[13.1,1.38],[13.3,1.41],[13.5,1.43],[13.7,1.46],[13.8,1.48],[14.0,1.51],[14.2,1.53]
+    ]
+  }
+};
+function sexKey(){ return (setup.sex==="boy") ? "boy" : "girl"; }
+function sexLabel(){ return (setup.sex==="boy") ? "남아" : "여아"; }
+// 개월(소수 가능)에서 [M,SD] 선형보간
+function growthMSD(kind, ageMonths){
+  const arr = GROWTH[sexKey()][kind];
+  const maxIdx = arr.length-1;
+  let a = ageMonths; if(a<0) a=0; if(a>maxIdx) a=maxIdx;
+  const lo = Math.floor(a), hi = Math.min(lo+1, maxIdx), f = a-lo;
+  const M = arr[lo][0] + (arr[hi][0]-arr[lo][0])*f;
+  const SD = arr[lo][1] + (arr[hi][1]-arr[lo][1])*f;
+  return {M, SD};
+}
+// 표준정규 누적분포 → 백분위(%)
+function zToPercentile(z){
+  // Abramowitz-Stegun 근사
+  const t = 1/(1+0.2316419*Math.abs(z));
+  const d = 0.3989423*Math.exp(-z*z/2);
+  let p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  p = 1-p; if(z<0) p = 1-p;
+  return p*100;
+}
+function percentileOf(kind, ageMonths, value){
+  const {M,SD} = growthMSD(kind, ageMonths);
+  const z = (value-M)/SD;
+  return { pct: zToPercentile(z), z, M, SD };
+}
+function pctLabel(p){
+  if(p>=97) return {txt:`상위 ${(100-p).toFixed(0)}% (또래보다 큰 편)`, cls:"over"};
+  if(p<=3)  return {txt:`하위 ${p.toFixed(0)}% (또래보다 작은 편)`, cls:"under"};
+  return {txt:`상위 ${(100-p).toFixed(0)}% 수준`, cls:"ok"};
+}
+function pctColor(p){ return p>=97?"#c0502e":p<=3?"#c47d1a":"#3a8a3e"; }
+
+/* ---------- 성장 기록 상태 ---------- */
+const GKEY = "babyfood_growth_v1"; // [{id,date,height,weight}]
+let growth = [];
+try { growth = JSON.parse(localStorage.getItem(GKEY)) || []; } catch(e){ growth = []; }
+function saveGrowth(){ localStorage.setItem(GKEY, JSON.stringify(growth)); }
+function ageMonthsAt(dateStr){
+  const bd = parseDate(setup.birth), d = parseDate(dateStr);
+  const dm = diffMonthsDays(bd, d);
+  return dm.months + dm.days/30.4375;
+}
+function addGrowth(){
+  const date = document.getElementById("grDate").value;
+  const h = parseFloat(document.getElementById("grHeight").value);
+  const w = parseFloat(document.getElementById("grWeight").value);
+  if(!date){ alert("측정일을 입력해 주세요."); return; }
+  if(!h && !w){ alert("키 또는 몸무게 중 하나는 입력해 주세요."); return; }
+  if(parseDate(date) < parseDate(setup.birth)){ alert("측정일이 출생일보다 앞설 수 없어요."); return; }
+  growth.push({ id:Date.now(), date, height: h||null, weight: w||null });
+  growth.sort((a,b)=> a.date<b.date?-1:1);
+  document.getElementById("grHeight").value="";
+  document.getElementById("grWeight").value="";
+  saveGrowth(); renderGrowth();
+}
+function delGrowth(id){ if(!confirm("이 기록을 삭제할까요?"))return; growth=growth.filter(g=>g.id!==id); saveGrowth(); renderGrowth(); }
+
+/* ---------- 성장 그래프(SVG) ---------- */
+function buildGrowthChart(kind){
+  const arr = GROWTH[sexKey()][kind];
+  const W=340, H=240, padL=34, padR=10, padT=10, padB=24;
+  const maxMonth = 35;
+  // y 범위: 데이터 3rd~97th 전체 + 아이 기록 포함
+  let yMin=Infinity, yMax=-Infinity;
+  arr.forEach(([M,SD])=>{ yMin=Math.min(yMin,M-1.88*SD); yMax=Math.max(yMax,M+1.88*SD); });
+  const pts = growth.filter(g=>g[kind]!=null).map(g=>({x:ageMonthsAt(g.date), y:g[kind]}));
+  pts.forEach(p=>{ if(p.x<=maxMonth){ yMin=Math.min(yMin,p.y); yMax=Math.max(yMax,p.y);} });
+  const pad=(yMax-yMin)*0.08; yMin-=pad; yMax+=pad;
+  const X = m => padL + (m/maxMonth)*(W-padL-padR);
+  const Y = v => padT + (1-(v-yMin)/(yMax-yMin))*(H-padT-padB);
+  const line = (fn) => arr.map((_,m)=>`${m===0?'M':'L'}${X(m).toFixed(1)},${Y(fn(arr[m])).toFixed(1)}`).join(" ");
+  // 밴드 (3rd~97th) : z=±1.88
+  const top = arr.map((d,m)=>`${X(m).toFixed(1)},${Y(d[0]+1.88*d[1]).toFixed(1)}`).join(" ");
+  const bot = arr.map((d,m)=>`${X(m).toFixed(1)},${Y(d[0]-1.88*d[1]).toFixed(1)}`).reverse().join(" ");
+  const band = `M${top} L${bot} Z`;
+  const median = line(d=>d[0]);
+  // x축 눈금 (0,6,12,18,24,30,35)
+  const xticks = [0,6,12,18,24,30,35].map(m=>`<line x1="${X(m)}" y1="${H-padB}" x2="${X(m)}" y2="${H-padB+4}" stroke="#c9b8a6"/><text x="${X(m)}" y="${H-padB+15}" font-size="9" fill="#a08a78" text-anchor="middle">${m}</text>`).join("");
+  // y축 눈금 (5등분)
+  let yticks="";
+  for(let i=0;i<=4;i++){ const v=yMin+(yMax-yMin)*i/4; const yy=Y(v); yticks+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="#f0e6da"/><text x="${padL-4}" y="${yy+3}" font-size="9" fill="#a08a78" text-anchor="end">${v.toFixed(kind==="weight"?1:0)}</text>`; }
+  // 아이 기록 점 + 선
+  const inPts = pts.filter(p=>p.x<=maxMonth).sort((a,b)=>a.x-b.x);
+  const babyLine = inPts.length>1 ? `<polyline points="${inPts.map(p=>`${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ")}" fill="none" stroke="#e8843c" stroke-width="2"/>` : "";
+  const dots = inPts.map(p=>`<circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="4" fill="#e8843c" stroke="#fff" stroke-width="1.5"/>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    ${yticks}
+    <path d="${band}" fill="#e9dcc9" opacity="0.6"/>
+    <path d="${median}" fill="none" stroke="#c9a86a" stroke-width="2"/>
+    ${xticks}
+    <text x="${W-padR}" y="${H-2}" font-size="9" fill="#b0a294" text-anchor="end">개월</text>
+    ${babyLine}${dots}
+  </svg>`;
+}
+
+function renderGrowth(){
+  if(!document.getElementById("grDate")) return;
+  if(!document.getElementById("grDate").value) document.getElementById("grDate").valueAsDate = new Date();
+
+  // 그래프
+  document.getElementById("grHeightChart").innerHTML = buildGrowthChart("height");
+  document.getElementById("grWeightChart").innerHTML = buildGrowthChart("weight");
+
+  // 최신 측정 요약
+  const sumEl = document.getElementById("grSummary");
+  const latestH = [...growth].reverse().find(g=>g.height!=null);
+  const latestW = [...growth].reverse().find(g=>g.weight!=null);
+  if(!latestH && !latestW){
+    sumEl.innerHTML = `<div class="gr-empty">아직 기록이 없어요. 아래에서 키·몸무게를 입력하면 또래(${sexLabel()}) 평균과 비교해드려요 🌱</div>`;
+  } else {
+    let cards = "";
+    if(latestH){
+      const a = ageMonthsAt(latestH.date);
+      const r = percentileOf("height", a, latestH.height);
+      const lab = pctLabel(r.pct), col=pctColor(r.pct);
+      cards += `<div class="gr-card" style="--c:${col}">
+        <div class="gc-lbl">📏 키 · ${latestH.date}</div>
+        <div class="gc-val">${latestH.height} cm</div>
+        <div class="gc-pct" style="color:${col}">${lab.txt}</div>
+        <div class="gc-note">만 ${Math.floor(a)}개월 ${sexLabel()} 평균 ${r.M.toFixed(1)}cm · 우리 아기 ${latestH.height>r.M?'+':''}${(latestH.height-r.M).toFixed(1)}cm</div>
+      </div>`;
+    }
+    if(latestW){
+      const a = ageMonthsAt(latestW.date);
+      const r = percentileOf("weight", a, latestW.weight);
+      const lab = pctLabel(r.pct), col=pctColor(r.pct);
+      cards += `<div class="gr-card" style="--c:${col}">
+        <div class="gc-lbl">⚖️ 몸무게 · ${latestW.date}</div>
+        <div class="gc-val">${latestW.weight} kg</div>
+        <div class="gc-pct" style="color:${col}">${lab.txt}</div>
+        <div class="gc-note">만 ${Math.floor(a)}개월 ${sexLabel()} 평균 ${r.M.toFixed(1)}kg · 우리 아기 ${latestW.weight>r.M?'+':''}${(latestW.weight-r.M).toFixed(1)}kg</div>
+      </div>`;
+    }
+    sumEl.innerHTML = cards;
+  }
+
+  // 기록 목록 (최신순)
+  const listEl = document.getElementById("grList");
+  if(growth.length===0){ listEl.innerHTML=""; return; }
+  listEl.innerHTML = [...growth].reverse().map(g=>{
+    const a = ageMonthsAt(g.date);
+    const dm = diffMonthsDays(parseDate(setup.birth), parseDate(g.date));
+    let vals = [];
+    if(g.height!=null){ const r=percentileOf("height",a,g.height); vals.push(`<span class="gi-val">키 <b>${g.height}</b>cm <span class="gi-pct" style="color:${pctColor(r.pct)}">${r.pct>=97?'97%↑':r.pct<=3?'3%↓':'상위'+(100-r.pct).toFixed(0)+'%'}</span></span>`); }
+    if(g.weight!=null){ const r=percentileOf("weight",a,g.weight); vals.push(`<span class="gi-val">몸무게 <b>${g.weight}</b>kg <span class="gi-pct" style="color:${pctColor(r.pct)}">${r.pct>=97?'97%↑':r.pct<=3?'3%↓':'상위'+(100-r.pct).toFixed(0)+'%'}</span></span>`); }
+    return `<div class="gr-item">
+      <span class="gi-date">${g.date}</span>
+      <span class="gi-age">만 ${dm.months}개월 ${dm.days}일</span>
+      ${vals.join("")}
+      <button class="del" onclick="delGrowth(${g.id})" title="삭제">✕</button>
+    </div>`;
+  }).join("");
 }
 
 /* ---------- 새 재료 관찰 트래커 ---------- */
