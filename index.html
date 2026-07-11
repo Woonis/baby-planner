@@ -436,6 +436,14 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .dr-guide { background:#fff6ee; border:1px dashed #e8b58c; border-radius:12px; padding:12px 15px; font-size:12.5px; color:#8a5a36; margin-bottom:16px; line-height:1.6; }
 .dr-guide.over { background:#fdeeea; border-color:#e3b0a0; color:#c0502e; }
 .dr-guide b { color:#c0502e; }
+.dr-viewtoggle { display:flex; gap:6px; background:#f4ece4; border-radius:12px; padding:5px; margin-bottom:14px; }
+.dr-viewtoggle button { flex:1; border:none; background:transparent; color:#9c8470; font-size:13.5px; font-weight:700; padding:9px; border-radius:9px; cursor:pointer; }
+.dr-viewtoggle button.active { background:#fff; color:#e8843c; box-shadow:0 1px 4px rgba(150,90,50,.12); }
+#drClock svg { width:100%; height:auto; display:block; max-width:360px; margin:0 auto; }
+.dr-clock-legend { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; font-size:12px; color:#8a7868; margin-top:10px; }
+.dr-clock-legend span { display:inline-flex; align-items:center; gap:5px; }
+.dr-clock-legend i { width:11px; height:11px; border-radius:50%; display:inline-block; }
+.dr-clock-empty { text-align:center; color:#b0a294; font-size:13px; padding:20px; }
 .dr-datebar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .dr-datetitle { font-size:16px; font-weight:700; color:#6b4226; }
 .dr-list { display:flex; flex-direction:column; gap:8px; }
@@ -629,8 +637,16 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
         <button class="navbtn" id="drDateNext" onclick="moveDrDate(1)">›</button>
       </div>
 
+      <!-- 보기 전환: 목록 / 일과표 -->
+      <div class="dr-viewtoggle">
+        <button id="drViewList" class="active" onclick="setDrView('list')">📋 목록</button>
+        <button id="drViewClock" onclick="setDrView('clock')">🕛 일과표</button>
+      </div>
+
       <!-- 그날 기록 목록 -->
       <div class="dr-list" id="drList"></div>
+      <!-- 24시간 원형 일과표 -->
+      <div id="drClock" style="display:none"></div>
     </section>
   </div>
 
@@ -2463,8 +2479,8 @@ function renderDaily(){
 
   const dayRecs = mine.filter(r=>ymd(new Date(r.ts))===drDate).sort((a,b)=>b.ts-a.ts);
   const listEl = document.getElementById("drList");
-  if(dayRecs.length===0){ listEl.innerHTML = `<div class="dr-empty">이 날의 기록이 없어요. 위 버튼으로 추가해 보세요 🍼</div>`; return; }
-  listEl.innerHTML = dayRecs.map(r=>{
+  if(dayRecs.length===0){ listEl.innerHTML = `<div class="dr-empty">이 날의 기록이 없어요. 위 버튼으로 추가해 보세요 🍼</div>`; }
+  else listEl.innerHTML = dayRecs.map(r=>{
     const meta = REC_META[r.type];
     const tag = multi ? `<span class="babytag di-baby" style="background:${babyColor(babies.findIndex(b=>b.id===r.babyId))}">${babyName(babies.findIndex(b=>b.id===r.babyId))}</span> ` : "";
     return `<div class="dr-item" style="--c:${meta.color}">
@@ -2474,8 +2490,66 @@ function renderDaily(){
       <button class="del" onclick="delRoutine(${r.id})" title="삭제">✕</button>
     </div>`;
   }).join("");
+  // 24시간 일과표
+  document.getElementById("drClock").innerHTML = buildDayClock(dayRecs);
 }
 function selectDailyBaby(i){ setActiveBaby(i); renderDaily(); }
+// 목록/일과표 보기 전환
+let drView = "list";
+function setDrView(v){
+  drView = v;
+  document.getElementById("drViewList").classList.toggle("active", v==="list");
+  document.getElementById("drViewClock").classList.toggle("active", v==="clock");
+  document.getElementById("drList").style.display = v==="list" ? "" : "none";
+  document.getElementById("drClock").style.display = v==="clock" ? "block" : "none";
+}
+// 24시간 원형 일과표 SVG (자정=위, 시계방향)
+function buildDayClock(recs){
+  if(!recs || recs.length===0) return `<div class="dr-clock-empty">이 날의 기록이 없어요 🕛</div>`;
+  const C=180, R=140, rInner=70;
+  const ang = ms => { const d=new Date(ms); const h=d.getHours()+d.getMinutes()/60; return (h/24)*360 - 90; }; // -90: 0시를 위로
+  const pt = (deg, r) => [C + r*Math.cos(deg*Math.PI/180), C + r*Math.sin(deg*Math.PI/180)];
+  // 눈금 (0~22, 2시간 간격)
+  let ticks="";
+  for(let hh=0; hh<24; hh+=2){
+    const deg=(hh/24)*360-90;
+    const [x1,y1]=pt(deg,R), [x2,y2]=pt(deg,R+6), [tx,ty]=pt(deg,R+20);
+    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#c9b8a6" stroke-width="1"/>`;
+    ticks += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-size="11" fill="#a08a78" text-anchor="middle" dominant-baseline="middle">${hh}</text>`;
+  }
+  // 잠(sleep): 지속시간만큼 호(arc)
+  let arcs="";
+  recs.filter(r=>r.type==="sleep").forEach(r=>{
+    const start=r.ts, end=r.ts + (r.mins||0)*60000;
+    const a0=ang(start), a1=ang(end);
+    const large = ((r.mins||0) > 720) ? 1 : 0;  // 12시간 초과
+    const rr=R-16;
+    const [sx,sy]=pt(a0,rr), [ex,ey]=pt(a1,rr);
+    arcs += `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} A${rr},${rr} 0 ${large} 1 ${ex.toFixed(1)},${ey.toFixed(1)}" fill="none" stroke="${REC_META.sleep.color}" stroke-width="9" stroke-linecap="round" opacity="0.85"/>`;
+  });
+  // 점: 모유·분유·기저귀·체온·투약
+  let dots="";
+  const dotRadius = { breast:R-16, formula:R-30, diaper:R-44, temp:R-58, med:R-58 };
+  recs.filter(r=>r.type!=="sleep").forEach(r=>{
+    const deg=ang(r.ts);
+    const rr = dotRadius[r.type] || (R-30);
+    const [x,y]=pt(deg,rr);
+    const col = (REC_META[r.type]||{}).color || "#888";
+    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="${col}" stroke="#fff" stroke-width="1.5"><title>${hmText(r.ts)} ${recMainText(r).replace(/<[^>]+>/g,"")}</title></circle>`;
+  });
+  // 범례 (그날 등장한 종류만)
+  const kinds=[...new Set(recs.map(r=>r.type))];
+  const order=["breast","formula","diaper","sleep","temp","med"];
+  const legend = order.filter(k=>kinds.includes(k)).map(k=>`<span><i style="background:${REC_META[k].color}"></i>${REC_META[k].icon} ${REC_META[k].title}</span>`).join("");
+  return `<svg viewBox="0 0 ${C*2} ${C*2}" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="#f4efe8"/>
+    <circle cx="${C}" cy="${C}" r="${rInner}" fill="#fff"/>
+    <text x="${C}" y="${C-6}" font-size="15" font-weight="700" fill="#6b4226" text-anchor="middle">일과표</text>
+    <text x="${C}" y="${C+14}" font-size="11" fill="#a08a78" text-anchor="middle">24시간</text>
+    ${ticks}${arcs}${dots}
+  </svg>
+  <div class="dr-clock-legend">${legend}</div>`;
+}
 
 /* ---------- 새 재료 관찰 트래커 (아기별) ---------- */
 let data = [];
