@@ -74,6 +74,14 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
 }
 .resetbtn:hover { background: #fdeeea; }
 .resethint { font-size: 12px; color: #b0a294; }
+.tabsettings { margin-top: 18px; padding: 14px 16px; background:#fbf3ec; border-radius:12px; }
+.tabsettings .ts-title { font-size:14px; font-weight:800; color:#6b4226; }
+.tabsettings .ts-desc { font-size:12px; color:#a08a78; margin:2px 0 10px; }
+.tabsettings .ts-opt { display:flex; align-items:center; gap:8px; font-size:14px; color:#4a3f34; padding:7px 0; cursor:pointer; }
+.tabsettings .ts-opt input { width:18px; height:18px; accent-color:#e8843c; }
+.tabsettings .ts-always { font-size:11px; color:#a08a78; background:#efe6da; border-radius:8px; padding:1px 7px; }
+.reco-mark { font-size:11px; font-weight:700; color:#fff; background:#e8843c; border-radius:8px; padding:1px 7px; }
+.reco-mark.vac { background:#c0502e; }
 .applied {
   display: none; margin-top: 12px; background: #e8f5e9; color: #3a8a3e;
   border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600;
@@ -189,6 +197,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .gearbtn.show { display: inline-block; }
 .gearbtn.active { background: #ffe8d6; transform: rotate(30deg); }
 .maintab.hidden { display: none; }
+.maintab.hidden-tab { display: none; }
 .page { display: none; }
 .page.active { display: block; }
 
@@ -471,8 +480,8 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
   <div class="mainnav-inner" id="mainnav">
     <button class="maintab active" data-page="info" id="infoTab" onclick="goPage('info')">👶 우리 아기 정보</button>
     <button class="maintab locked" data-page="daily" onclick="goPage('daily')">🍼 데일리 기록 <span class="lockicon">🔒</span></button>
-    <button class="maintab locked" data-page="vaccine" onclick="goPage('vaccine')">💉 예방접종 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="growth" onclick="goPage('growth')">📈 성장 기록 <span class="lockicon">🔒</span></button>
+    <button class="maintab locked" data-page="vaccine" onclick="goPage('vaccine')">💉 예방접종 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="food" onclick="goPage('food')">🍚 이유식 <span class="lockicon">🔒</span></button>
     <button class="gearbtn" id="gearBtn" onclick="goPage('info')" title="우리 아기 정보 · 설정">⚙️</button>
   </div>
@@ -496,7 +505,15 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
       <button class="applybtn" onclick="applySetup()">적용</button>
       <div class="rec6" id="rec6"></div>
       <div class="babychip" id="babyChip"></div>
-      <div class="applied" id="appliedMsg">✅ 적용됐어요! 위쪽 탭에서 예방접종·성장·이유식을 확인해 보세요.</div>
+      <div class="tabsettings" id="tabSettings" style="display:none">
+        <div class="ts-title">📑 보기 탭 선택</div>
+        <div class="ts-desc">보고 싶은 탭만 켜두세요. 데일리 기록은 항상 표시돼요.</div>
+        <label class="ts-opt"><input type="checkbox" checked disabled> 🍼 데일리 기록 <span class="ts-always">항상</span></label>
+        <label class="ts-opt"><input type="checkbox" id="tabchk-growth" onchange="toggleTabVis('growth',this.checked)"> 📈 성장 기록</label>
+        <label class="ts-opt"><input type="checkbox" id="tabchk-vaccine" onchange="toggleTabVis('vaccine',this.checked)"> 💉 예방접종 <span id="vacRecoMark"></span></label>
+        <label class="ts-opt"><input type="checkbox" id="tabchk-food" onchange="toggleTabVis('food',this.checked)"> 🍚 이유식 <span id="foodRecoMark"></span></label>
+      </div>
+      <div class="applied" id="appliedMsg">✅ 적용됐어요! 위쪽 탭에서 켜둔 메뉴를 확인해 보세요.</div>
       <div class="resetrow">
         <button class="resetbtn" onclick="resetAll()">🗑️ 전체 초기화</button>
         <span class="resethint">아기 정보·캘린더 식단·관찰 기록 등 저장된 모든 내용이 삭제돼요.</span>
@@ -856,6 +873,11 @@ let activeBabyIdx = 0;
 let setup = babies[activeBabyIdx];
 function setActiveBaby(i){ activeBabyIdx = i; setup = babies[activeBabyIdx]; }
 function saveBabies(){ localStorage.setItem(SKEY2, JSON.stringify(babies)); }
+// 탭 표시 설정 (데일리는 항상 표시. growth/vaccine/food 켜고 끄기)
+const TVKEY = "babyplanner_tabvis_v1";
+let tabVis = { growth:true, vaccine:true, food:true };
+try { const t=JSON.parse(localStorage.getItem(TVKEY)); if(t) tabVis=Object.assign(tabVis,t); } catch(e){}
+function saveTabVis(){ localStorage.setItem(TVKEY, JSON.stringify(tabVis)); }
 function babyName(i){ return babies[i] && babies[i].name ? babies[i].name : (babies.length>1 ? `${i+1}번째 아이` : "우리 아기"); }
 
 function ymd(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
@@ -1501,12 +1523,16 @@ function unlockTabs(){
   // 정보 입력 완료 → 정보 탭은 감추고 톱니바퀴로 접근
   document.getElementById("infoTab").classList.add("hidden");
   document.getElementById("gearBtn").classList.add("show");
+  // 탭 표시 설정 패널 노출 + 체크박스 상태 동기화 + 적용
+  document.getElementById("tabSettings").style.display="block";
+  renderTabSettings();
+  applyTabVis();
 }
 function relockTabs(){
   tabsUnlocked = false;
   document.querySelectorAll('.maintab').forEach(t=>{
     if(t.dataset.page==="info") return;
-    t.classList.add('locked');
+    t.classList.add('locked'); t.classList.remove('hidden-tab');
     if(!t.querySelector('.lockicon')){
       const s = document.createElement('span');
       s.className = 'lockicon'; s.textContent = '🔒';
@@ -1516,6 +1542,48 @@ function relockTabs(){
   // 정보 탭 다시 보이고 톱니바퀴 숨김
   document.getElementById("infoTab").classList.remove("hidden");
   document.getElementById("gearBtn").classList.remove("show");
+  const ts=document.getElementById("tabSettings"); if(ts) ts.style.display="none";
+}
+// 켜둔 탭만 네비에 노출 (데일리는 항상)
+function applyTabVis(){
+  ["growth","vaccine","food"].forEach(p=>{
+    const tab=document.querySelector(`.maintab[data-page="${p}"]`);
+    if(tab) tab.classList.toggle("hidden-tab", !tabVis[p]);
+  });
+  renderTabSettings();
+}
+function toggleTabVis(page, on){
+  tabVis[page]=on; saveTabVis();
+  const tab=document.querySelector(`.maintab[data-page="${page}"]`);
+  if(tab) tab.classList.toggle("hidden-tab", !on);
+  // 숨긴 탭이 현재 활성이면 데일리로 이동
+  if(!on){ const cur=document.querySelector('.maintab.active'); if(cur && cur.dataset.page===page) goPage("daily"); }
+  renderTabSettings();
+}
+// 설정 패널: 체크 상태 + 추천/알림 마킹
+function renderTabSettings(){
+  const g=document.getElementById("tabchk-growth"); if(g) g.checked=!!tabVis.growth;
+  const v=document.getElementById("tabchk-vaccine"); if(v) v.checked=!!tabVis.vaccine;
+  const f=document.getElementById("tabchk-food"); if(f) f.checked=!!tabVis.food;
+  // 이유식 추천: 어느 아이든 오늘이 이유식 시작일 지났으면
+  const today=new Date(); today.setHours(0,0,0,0);
+  const foodReco = babies.some(b=> parseDate(b.start) <= today);
+  const fm=document.getElementById("foodRecoMark");
+  if(fm) fm.innerHTML = (foodReco && !tabVis.food) ? `<span class="reco-mark">추천</span>` : (foodReco ? `<span class="reco-mark">시작 시기</span>` : "");
+  // 예방접종: 다가오는 접종(D-30 이내, 미완료)이 있으면 알림
+  const vm=document.getElementById("vacRecoMark");
+  if(vm){
+    let soon=false;
+    babies.forEach((baby)=>{
+      VAC.forEach((vac_,i)=>{
+        if(vac_.yearly) return;
+        if((vacFor(baby.id)[vacKey(vac_,i)]||{}).done) return;
+        const due=vacDue(vac_,baby); const diff=Math.round((due-today)/86400000);
+        if(diff>=0 && diff<=30) soon=true;
+      });
+    });
+    vm.innerHTML = (soon && !tabVis.vaccine) ? `<span class="reco-mark vac">접종 임박!</span>` : "";
+  }
 }
 let curSub = "roadmap"; // 이유식 탭 내 현재 하위 페이지
 function goPage(name){
@@ -2447,7 +2515,7 @@ function renderLog(){
 renderAll();
 renderLog();
 // 이전에 정보를 적용·저장한 적이 있으면 탭을 미리 열고 첫 탭(예방접종)으로 시작
-if(localStorage.getItem(SKEY2) || localStorage.getItem(SKEY)){ unlockTabs(); goPage("vaccine"); }
+if(localStorage.getItem(SKEY2) || localStorage.getItem(SKEY)){ unlockTabs(); goPage("daily"); }
 </script>
 </body>
 </html>
