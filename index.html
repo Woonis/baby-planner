@@ -93,6 +93,14 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
 .agecard .ac-num small { font-size:12px; font-weight:700; color:#a08a78; }
 .agecard .ac-lbl { font-size:11px; color:#a08a78; margin-top:3px; }
 .agecard .ac-born { font-size:11.5px; color:#8a6b52; margin-top:9px; text-align:center; }
+.agecard .ac-milestone-btn {
+  width:100%; margin-top:12px; border:none; border-radius:11px; cursor:pointer;
+  background:linear-gradient(135deg,#fbb47d,#f0904a); color:#fff;
+  font-size:13px; font-weight:800; padding:11px 10px;
+  box-shadow:0 2px 7px rgba(224,124,58,.28); transition:box-shadow .12s, transform .08s;
+}
+.agecard .ac-milestone-btn:hover { box-shadow:0 3px 11px rgba(224,124,58,.4); }
+.agecard .ac-milestone-btn:active { transform:scale(.98); }
 .resetrow { margin-top: 22px; padding-top: 18px; border-top: 1px solid #f0e2d4; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .resetbtn {
   background: #fff; border: 1px solid #e3b0a0; color: #c0502e; border-radius: 10px;
@@ -240,6 +248,19 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .subtab.active { background: #fff; color: #e8843c; box-shadow: 0 1px 4px rgba(150,90,50,.12); }
 .subpage { display: none; }
 .subpage.active { display: block; }
+/* 설정(톱니바퀴) 하위 탭 */
+.setnav {
+  display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px;
+  background: #f4ece4; border-radius: 12px; padding: 5px;
+}
+.settab {
+  border: none; background: transparent; color: #9c8470; font-size: 13px; font-weight: 700;
+  padding: 9px 8px; cursor: pointer; border-radius: 9px; transition: .15s; flex: 1; white-space: nowrap;
+}
+.settab:hover { color: #6b4226; }
+.settab.active { background: #fff; color: #e8843c; box-shadow: 0 1px 4px rgba(150,90,50,.12); }
+.setpage { display: none; }
+.setpage.active { display: block; }
 .locked-msg {
   text-align: center; color: #b0a294; font-size: 14px; padding: 50px 20px;
   background: #fff; border-radius: 16px; box-shadow: 0 2px 10px rgba(150,90,50,.07); margin-top: 24px;
@@ -605,33 +626,53 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
   <!-- 페이지: 우리 아기 정보 -->
   <div class="page active" id="page-info">
     <div class="setup">
-      <h2>👶 우리 아기 정보</h2>
-      <div class="desc">아래 정보를 입력하고 적용하면 나머지 탭(예방접종·성장·이유식)이 열려요.</div>
-      <div class="field" style="margin-bottom:14px">
-        <label>아이 수</label>
-        <div class="sexpick" id="countPick">
-          <label class="sexopt"><input type="radio" name="babycount" value="1" checked onchange="setBabyCount(1)"> 1명</label>
-          <label class="sexopt"><input type="radio" name="babycount" value="2" onchange="setBabyCount(2)"> 2명 (쌍둥이)</label>
+      <!-- 설정 하위 탭 (정보 입력 후에만 노출) -->
+      <div class="setnav" id="setNav" style="display:none">
+        <button class="settab active" data-set="milestone" onclick="goSet('milestone')">🎂 아이 기념일</button>
+        <button class="settab" data-set="tabs" onclick="goSet('tabs')">📑 보기 탭 설정</button>
+        <button class="settab" data-set="babyinfo" onclick="goSet('babyinfo')">👶 우리 아기 정보</button>
+      </div>
+
+      <!-- 하위: 아이 기념일 -->
+      <div class="setpage" id="set-milestone">
+        <h2>🎂 아이 기념일</h2>
+        <div class="desc">우리 아이의 개월 수·생후 일수를 한눈에 보고, 기념일을 캘린더로 내보낼 수 있어요.</div>
+        <div class="agecards" id="ageCards"></div>
+        <div class="rec6" id="rec6"></div>
+      </div>
+
+      <!-- 하위: 보기 탭 설정 -->
+      <div class="setpage" id="set-tabs">
+        <h2>📑 보기 탭 설정</h2>
+        <div class="desc">보고 싶은 탭만 켜두세요. 데일리 기록은 항상 표시돼요.</div>
+        <div class="tabsettings" id="tabSettings">
+          <label class="ts-opt"><input type="checkbox" checked disabled> 🍼 데일리 기록 <span class="ts-always">항상</span></label>
+          <label class="ts-opt"><input type="checkbox" id="tabchk-wonder" onchange="toggleTabVis('wonder',this.checked)"> 🌈 원더윅스 <span id="wwRecoMark"></span></label>
+          <label class="ts-opt"><input type="checkbox" id="tabchk-growth" onchange="toggleTabVis('growth',this.checked)"> 📈 성장 기록</label>
+          <label class="ts-opt"><input type="checkbox" id="tabchk-vaccine" onchange="toggleTabVis('vaccine',this.checked)"> 💉 예방접종 <span id="vacRecoMark"></span></label>
+          <label class="ts-opt"><input type="checkbox" id="tabchk-food" onchange="toggleTabVis('food',this.checked)"> 🍚 이유식 <span id="foodRecoMark"></span></label>
         </div>
       </div>
-      <div id="babyForms"></div>
-      <button class="applybtn" onclick="applySetup()">적용</button>
-      <div class="agecards" id="ageCards"></div>
-      <div class="rec6" id="rec6"></div>
-      <div class="babychip" id="babyChip"></div>
-      <div class="tabsettings" id="tabSettings" style="display:none">
-        <div class="ts-title">📑 보기 탭 선택</div>
-        <div class="ts-desc">보고 싶은 탭만 켜두세요. 데일리 기록은 항상 표시돼요.</div>
-        <label class="ts-opt"><input type="checkbox" checked disabled> 🍼 데일리 기록 <span class="ts-always">항상</span></label>
-        <label class="ts-opt"><input type="checkbox" id="tabchk-wonder" onchange="toggleTabVis('wonder',this.checked)"> 🌈 원더윅스 <span id="wwRecoMark"></span></label>
-        <label class="ts-opt"><input type="checkbox" id="tabchk-growth" onchange="toggleTabVis('growth',this.checked)"> 📈 성장 기록</label>
-        <label class="ts-opt"><input type="checkbox" id="tabchk-vaccine" onchange="toggleTabVis('vaccine',this.checked)"> 💉 예방접종 <span id="vacRecoMark"></span></label>
-        <label class="ts-opt"><input type="checkbox" id="tabchk-food" onchange="toggleTabVis('food',this.checked)"> 🍚 이유식 <span id="foodRecoMark"></span></label>
-      </div>
-      <div class="applied" id="appliedMsg">✅ 적용됐어요! 위쪽 탭에서 켜둔 메뉴를 확인해 보세요.</div>
-      <div class="resetrow">
-        <button class="resetbtn" onclick="resetAll()">🗑️ 전체 초기화</button>
-        <span class="resethint">아기 정보·캘린더 식단·관찰 기록 등 저장된 모든 내용이 삭제돼요.</span>
+
+      <!-- 하위: 우리 아기 정보 (입력 폼) -->
+      <div class="setpage active" id="set-babyinfo">
+        <h2>👶 우리 아기 정보</h2>
+        <div class="desc">아래 정보를 입력하고 적용하면 나머지 탭(예방접종·성장·이유식)이 열려요.</div>
+        <div class="field" style="margin-bottom:14px">
+          <label>아이 수</label>
+          <div class="sexpick" id="countPick">
+            <label class="sexopt"><input type="radio" name="babycount" value="1" checked onchange="setBabyCount(1)"> 1명</label>
+            <label class="sexopt"><input type="radio" name="babycount" value="2" onchange="setBabyCount(2)"> 2명 (쌍둥이)</label>
+          </div>
+        </div>
+        <div id="babyForms"></div>
+        <button class="applybtn" onclick="applySetup()">적용</button>
+        <div class="babychip" id="babyChip"></div>
+        <div class="applied" id="appliedMsg">✅ 적용됐어요! 위쪽 탭에서 켜둔 메뉴를 확인해 보세요.</div>
+        <div class="resetrow">
+          <button class="resetbtn" onclick="resetAll()">🗑️ 전체 초기화</button>
+          <span class="resethint">아기 정보·캘린더 식단·관찰 기록 등 저장된 모든 내용이 삭제돼요.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1561,8 +1602,49 @@ function renderAgeCards(){
         <div class="ac-box"><div class="ac-num">${bornDays}<small>일째</small></div><div class="ac-lbl">생후 일수</div></div>
       </div>
       <div class="ac-born">📅 ${fmtDate(bd)} 출생</div>
+      <button class="ac-milestone-btn" onclick="downloadMilestoneICS(${i})">🎂 아이 기념일 캘린더 내보내기</button>
     </div>`;
   }).join("");
+}
+// 생후 기념일(일수) 목록
+const MILESTONE_DAYS = [50, 100, 200, 300, 365, 500, 600, 700, 777, 800, 900, 1000];
+// 생후 N일째의 실제 날짜 (출생일=1일째 → 출생일 + (N-1)일)
+function milestoneDate(birthStr, dayNo){ return addDays(parseDate(birthStr), dayNo-1); }
+// 아이 기념일 .ics 내보내기
+function downloadMilestoneICS(babyIdx){
+  const baby = babies[babyIdx];
+  if(!baby){ return; }
+  const nm = babyName(babyIdx);
+  const stamp = icsStamp(new Date());
+  const lines = [
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//BabyPlanner//Milestone//KR",
+    "CALSCALE:GREGORIAN","METHOD:PUBLISH",
+    `X-WR-CALNAME:${icsEsc(nm+" 기념일")}`,
+    "X-WR-TIMEZONE:Asia/Seoul"
+  ];
+  MILESTONE_DAYS.forEach(dn=>{
+    const d = milestoneDate(baby.birth, dn);
+    const dtEndExclusive = addDays(d, 1);
+    const label = (dn===365) ? "첫 생일 (365일)" : `${dn}일`;
+    const uid = `mstone-${baby.id}-${dn}@babyplanner`;
+    lines.push("BEGIN:VEVENT");
+    lines.push(`UID:${uid}`);
+    lines.push(`DTSTAMP:${stamp}`);
+    lines.push(`DTSTART;VALUE=DATE:${icsDate(d)}`);
+    lines.push(`DTEND;VALUE=DATE:${icsDate(dtEndExclusive)}`);
+    lines.push(`SUMMARY:${icsEsc("🎂 "+nm+" 생후 "+label)}`);
+    lines.push(`DESCRIPTION:${icsEsc(nm+" 생후 "+dn+"일을 축하해요!")}`);
+    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(nm+" 생후 "+label+" 하루 전")}`,"TRIGGER:-P0DT15H","END:VALARM");
+    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(nm+" 생후 "+label)}`,"TRIGGER:PT9H","END:VALARM");
+    lines.push("END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  const blob = new Blob([lines.join("\r\n")], {type:"text/calendar;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `${nm}_기념일.ics`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
 }
 function renderRec6(){
   const html = babies.map((b,i)=>{
@@ -1710,10 +1792,18 @@ function unlockTabs(){
   // 정보 입력 완료 → 정보 탭은 감추고 톱니바퀴로 접근
   document.getElementById("infoTab").classList.add("hidden");
   document.getElementById("gearBtn").classList.add("show");
-  // 탭 표시 설정 패널 노출 + 체크박스 상태 동기화 + 적용
-  document.getElementById("tabSettings").style.display="block";
+  // 설정 하위 탭 노출 + 기본은 '아이 기념일'
+  document.getElementById("setNav").style.display="flex";
+  goSet("milestone");
   renderTabSettings();
   applyTabVis();
+}
+// 설정(톱니바퀴) 하위 탭 전환
+let curSet = "milestone";
+function goSet(name){
+  curSet = name;
+  document.querySelectorAll('.settab').forEach(t=>t.classList.toggle('active', t.dataset.set===name));
+  document.querySelectorAll('.setpage').forEach(p=>p.classList.toggle('active', p.id==="set-"+name));
 }
 function relockTabs(){
   tabsUnlocked = false;
@@ -1729,7 +1819,9 @@ function relockTabs(){
   // 정보 탭 다시 보이고 톱니바퀴 숨김
   document.getElementById("infoTab").classList.remove("hidden");
   document.getElementById("gearBtn").classList.remove("show");
-  const ts=document.getElementById("tabSettings"); if(ts) ts.style.display="none";
+  // 설정 하위 탭 숨기고 입력 폼(우리 아기 정보)만 노출
+  document.getElementById("setNav").style.display="none";
+  goSet("babyinfo");
 }
 // 켜둔 탭만 네비에 노출 (데일리는 항상)
 function applyTabVis(){
