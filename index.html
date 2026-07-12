@@ -478,13 +478,13 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .gr-item .del { margin-left:auto; background:none; border:none; color:#c4b3a4; cursor:pointer; font-size:16px; }
 
 /* 데일리 기록 */
-.dr-recent { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 0; }
-.dr-rc { background:#fff; border-radius:14px; padding:14px 12px; box-shadow:0 2px 10px rgba(150,90,50,.08); text-align:center; border-top:4px solid var(--c,#e8843c); }
-.dr-rc .rc-icon { font-size:20px; } .dr-rc .rc-lbl { font-size:11px; color:#a08a78; font-weight:700; margin-top:2px; }
-.dr-rc .rc-ago { font-size:16px; font-weight:800; color:#6b4226; margin-top:3px; }
-.dr-rc .rc-time { font-size:11px; color:#a08a78; margin-top:1px; }
-.dr-addbtns { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
-.dr-add { border:none; border-radius:12px; padding:14px 6px; font-size:13.5px; font-weight:700; cursor:pointer; color:#fff; }
+.dr-recent { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:14px 0; }
+.dr-rc { background:#fff; border-radius:11px; padding:9px 8px; box-shadow:0 1px 6px rgba(150,90,50,.07); text-align:center; border-top:3px solid var(--c,#e8843c); }
+.dr-rc .rc-icon { font-size:15px; } .dr-rc .rc-lbl { font-size:9.5px; color:#a08a78; font-weight:700; margin-top:1px; }
+.dr-rc .rc-ago { font-size:13px; font-weight:800; color:#6b4226; margin-top:2px; }
+.dr-rc .rc-time { font-size:9.5px; color:#a08a78; margin-top:0; }
+.dr-addbtns { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:14px; }
+.dr-add { border:none; border-radius:10px; padding:10px 5px; font-size:12.5px; font-weight:700; cursor:pointer; color:#fff; }
 .dr-add.breast { background:#ef8aa0; } .dr-add.formula { background:#f0b23c; }
 .dr-add.diaper { background:#b08968; } .dr-add.sleep { background:#8a7dc4; }
 .dr-add.temp { background:#e8663c; } .dr-add.med { background:#4a9d6a; }
@@ -492,6 +492,20 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .dr-guide { background:#fff6ee; border:1px dashed #e8b58c; border-radius:12px; padding:12px 15px; font-size:12.5px; color:#8a5a36; margin-bottom:16px; line-height:1.6; }
 .dr-guide.over { background:#fdeeea; border-color:#e3b0a0; color:#c0502e; }
 .dr-guide b { color:#c0502e; }
+.dr-guide .dg-head { display:flex; align-items:flex-start; gap:8px; cursor:pointer; }
+.dr-guide .dg-first { flex:1; }
+.dr-guide .dg-toggle { flex-shrink:0; background:none; border:none; color:#c4843c; font-size:15px; font-weight:800; cursor:pointer; padding:0 2px; line-height:1.2; }
+.dr-guide .dg-body { margin-top:8px; padding-top:8px; border-top:1px dashed #eecdb0; }
+.dr-guide.collapsed .dg-body { display:none; }
+/* 그날 요약 통계(평균 텀) — 수유/기저귀/잠 한 줄 3칸 */
+.dr-stats { display:flex; gap:8px; margin-bottom:16px; }
+.dr-stats .ds-card { flex:1 1 0; min-width:0; background:#fff; border:1px solid #efe0d2; border-radius:12px; padding:10px 11px; border-top:3px solid var(--c,#e8843c); }
+.dr-stats .ds-lbl { font-size:11.5px; color:#7a5238; font-weight:800; margin-bottom:7px; }
+.dr-stats .ds-item + .ds-item { margin-top:7px; }
+.dr-stats .ds-item .ds-val { font-size:15px; font-weight:800; color:#6b4226; line-height:1.15; white-space:nowrap; }
+.dr-stats .ds-item .ds-val small { font-size:10.5px; font-weight:700; color:#a08a78; }
+.dr-stats .ds-item .ds-cap { font-size:10px; color:#b0a294; margin-top:1px; }
+@media (max-width:400px){ .dr-stats .ds-item .ds-val { font-size:13.5px; } }
 .dr-viewtoggle { display:flex; gap:6px; background:#f4ece4; border-radius:12px; padding:5px; margin-bottom:14px; }
 .dr-viewtoggle button { flex:1; border:none; background:transparent; color:#9c8470; font-size:13.5px; font-weight:700; padding:9px; border-radius:9px; cursor:pointer; }
 .dr-viewtoggle button.active { background:#fff; color:#e8843c; box-shadow:0 1px 4px rgba(150,90,50,.12); }
@@ -502,6 +516,17 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .dr-clock-empty { text-align:center; color:#b0a294; font-size:13px; padding:20px; }
 .dr-datebar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .dr-datetitle { font-size:16px; font-weight:700; color:#6b4226; }
+.dr-datebar .navbtn, .ww-cal-bar .navbtn {
+  flex-shrink:0; width:38px; height:38px; border-radius:12px; cursor:pointer;
+  border:none; background:linear-gradient(135deg,#fbb47d,#f0904a); color:#fff;
+  font-size:18px; font-weight:800; line-height:1; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 6px rgba(224,124,58,.30); transition:transform .08s, box-shadow .12s, opacity .12s;
+}
+.dr-datebar .navbtn:hover, .ww-cal-bar .navbtn:hover { box-shadow:0 3px 10px rgba(224,124,58,.42); }
+.dr-datebar .navbtn:active, .ww-cal-bar .navbtn:active { transform:scale(.92); }
+.dr-datebar .navbtn:disabled, .ww-cal-bar .navbtn:disabled {
+  background:#f0e6db; color:#c9b7a6; box-shadow:none; cursor:not-allowed;
+}
 .dr-list { display:flex; flex-direction:column; gap:8px; }
 .dr-item { background:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 1px 6px rgba(150,90,50,.07); display:flex; align-items:center; gap:12px; border-left:4px solid var(--c,#e8843c); }
 .dr-item .di-time { font-size:13px; font-weight:700; color:#6b4226; min-width:64px; }
@@ -535,7 +560,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 @media (max-width: 720px) {
   .timeline { grid-template-columns: repeat(2, 1fr); }
   .maintab { font-size: 12.5px; padding: 10px 10px; }
-  .dr-addbtns { grid-template-columns: repeat(2,1fr); }
+  .dr-addbtns { grid-template-columns: repeat(3,1fr); }
   .calcell { min-height: 78px; padding: 5px; }
   .calcell .agelbl, .calcell .dd { font-size: 8.5px; }
   .calcell .meal { font-size: 9px; }
@@ -704,6 +729,9 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
         <button id="drViewList" class="active" onclick="setDrView('list')">📋 목록</button>
         <button id="drViewClock" onclick="setDrView('clock')">🕛 일과표</button>
       </div>
+
+      <!-- 그날 요약 통계(평균 텀 등) -->
+      <div class="dr-stats" id="drStats"></div>
 
       <!-- 그날 기록 목록 -->
       <div class="dr-list" id="drList"></div>
@@ -2264,6 +2292,13 @@ let routine = [];
 try { routine = JSON.parse(localStorage.getItem(RKEY)) || []; } catch(e){ routine = []; }
 function saveRoutine(){ localStorage.setItem(RKEY, JSON.stringify(routine)); }
 let drDate = ymd(new Date());   // 보고 있는 날짜
+// 권장 안내 접힘 상태(로컬 저장, 기본 펼침)
+let guideCollapsed = localStorage.getItem("babyplanner_guide_collapsed") === "1";
+function toggleGuide(){
+  guideCollapsed = !guideCollapsed;
+  localStorage.setItem("babyplanner_guide_collapsed", guideCollapsed ? "1" : "0");
+  renderDaily();
+}
 let recType = null;             // 현재 입력 종류
 let recState = {};              // 모달 입력 상태
 
@@ -2567,32 +2602,40 @@ function renderDaily(){
   const guide = feedGuideByAge(am);
   // 최신 몸무게(성장기록)
   const bg = (typeof growth!=="undefined") ? growth.filter(g=>g.babyId===baby.id && g.weight!=null).sort((a,b)=>a.date<b.date?1:-1)[0] : null;
-  let gHtml = "";
+  let firstLine = "", restLines = [];
   if(guide){
-    gHtml = `📋 <b style="color:#8a5a36">지금 권장</b> — 수유텀 ${guide.term} · 하루 ${guide.cnt} · 1회 분유 ${guide.ml}`;
+    firstLine = `📋 <b style="color:#8a5a36">지금 권장</b> — 수유텀 ${guide.term} · 하루 ${guide.cnt} · 1회 분유 ${guide.ml}`;
     if(bg){
       const totalMax = Math.round(bg.weight*150);
       const once = Math.round(bg.weight*20);
-      gHtml += `<br>⚖️ 몸무게 ${bg.weight}kg 기준: 하루 총 <b>${Math.min(totalMax,1000)}ml</b> 안팎(=${bg.weight}×150), 1회 <b>${once}~${once+20}ml</b> · 하루 1,000ml 넘지 않게`;
+      restLines.push(`⚖️ 몸무게 ${bg.weight}kg 기준: 하루 총 <b>${Math.min(totalMax,1000)}ml</b> 안팎(=${bg.weight}×150), 1회 <b>${once}~${once+20}ml</b> · 하루 1,000ml 넘지 않게`);
     }
     // 오늘 실제 수유 횟수 대비 알럿
     const today = ymd(new Date());
     const todayFeeds = mine.filter(r=>(r.type==="breast"||r.type==="formula") && ymd(new Date(r.ts))===today);
     const n = todayFeeds.length;
     if(drDate===today && n>0){
-      if(n < guide.cntMin) gHtml += `<br>⚠️ 오늘 수유 <b>${n}회</b> — 권장(${guide.cntMin}~${guide.cntMax}회)보다 적어요.`;
-      else if(n > guide.cntMax) gHtml += `<br>⚠️ 오늘 수유 <b>${n}회</b> — 권장(${guide.cntMin}~${guide.cntMax}회)보다 많아요.`;
-      else gHtml += `<br>✅ 오늘 수유 ${n}회 — 권장 범위 안이에요.`;
+      if(n < guide.cntMin) restLines.push(`⚠️ 오늘 수유 <b>${n}회</b> — 권장(${guide.cntMin}~${guide.cntMax}회)보다 적어요.`);
+      else if(n > guide.cntMax) restLines.push(`⚠️ 오늘 수유 <b>${n}회</b> — 권장(${guide.cntMin}~${guide.cntMax}회)보다 많아요.`);
+      else restLines.push(`✅ 오늘 수유 ${n}회 — 권장 범위 안이에요.`);
     }
     // 분유 총량 알럿
     const todayMl = todayFeeds.filter(r=>r.type==="formula").reduce((s,r)=>s+(r.ml||0),0);
-    if(drDate===today && todayMl>1000){ gHtml += `<br>⚠️ 오늘 분유 총 <b>${todayMl}ml</b> — 1,000ml를 넘었어요. 과식 주의.`; }
+    if(drDate===today && todayMl>1000){ restLines.push(`⚠️ 오늘 분유 총 <b>${todayMl}ml</b> — 1,000ml를 넘었어요. 과식 주의.`); }
     gEl.className = "dr-guide" + ((drDate===ymd(new Date()) && (n<guide.cntMin||n>guide.cntMax||todayMl>1000) && n>0)?" over":"");
   } else {
-    gHtml = `📋 이유식 시기예요. 수유는 이유식 양에 따라 조절하고, 성장·소변 횟수를 함께 살펴보세요.`;
+    firstLine = `📋 이유식 시기예요. 수유는 이유식 양에 따라 조절하고, 성장·소변 횟수를 함께 살펴보세요.`;
     gEl.className = "dr-guide";
   }
-  gEl.innerHTML = gHtml;
+  const hasRest = restLines.length>0;
+  const collapsed = guideCollapsed && hasRest;
+  gEl.classList.toggle("collapsed", collapsed);
+  gEl.innerHTML =
+    `<div class="dg-head"${hasRest?` onclick="toggleGuide()"`:""}>
+      <div class="dg-first">${firstLine}</div>
+      ${hasRest?`<button class="dg-toggle" aria-label="펼치기/접기">${collapsed?"▾":"▴"}</button>`:""}
+    </div>
+    ${hasRest?`<div class="dg-body">${restLines.join("<br>")}</div>`:""}`;
 
   // 날짜 네비 + 목록
   const dObj = parseDate(drDate);
@@ -2617,8 +2660,74 @@ function renderDaily(){
   }).join("");
   // 24시간 일과표
   document.getElementById("drClock").innerHTML = buildDayClock(dayRecs);
+  // 그날 요약 통계(평균 텀)
+  renderDrStats(dayRecs);
   // 원더윅스 배너 (오늘 기준)
   updateWwBanner(baby);
+}
+// 시간 간격 → "N시간 M분" 텍스트
+function durText(mins){
+  mins = Math.round(mins);
+  const h = Math.floor(mins/60), m = mins%60;
+  if(h && m) return `${h}시간 ${m}분`;
+  if(h) return `${h}시간`;
+  return `${m}분`;
+}
+// 시각 배열(ts) → 평균 텀(분). 2개 미만이면 null
+function avgGapMin(tsArr){
+  if(tsArr.length<2) return null;
+  const s = [...tsArr].sort((a,b)=>a-b);
+  let sum=0;
+  for(let i=1;i<s.length;i++) sum += (s[i]-s[i-1]);
+  return (sum/(s.length-1))/60000;
+}
+// 그날 기록 통계 카드 렌더 (평균 수유텀·기저귀텀 등)
+function renderDrStats(dayRecs){
+  const el = document.getElementById("drStats");
+  if(!el) return;
+  const cards = [];
+  // 한 통계 행: 큰 값 + 라벨
+  const stat = (val, cap)=>`<div class="ds-item"><div class="ds-val">${val}</div><div class="ds-cap">${cap}</div></div>`;
+  // 수유(모유+분유): 횟수 + 평균 텀
+  const feeds = dayRecs.filter(r=>r.type==="breast"||r.type==="formula");
+  if(feeds.length>0){
+    const g = avgGapMin(feeds.map(r=>r.ts));
+    cards.push(`<div class="ds-card" style="--c:#ef8aa0">
+      <div class="ds-lbl">🍼 수유</div>
+      ${stat(`${feeds.length}<small>회</small>`, "횟수")}
+      ${stat(g!=null?durText(g):"–", "평균 텀")}
+    </div>`);
+  }
+  // 기저귀: 횟수 + 평균 텀
+  const dp = dayRecs.filter(r=>r.type==="diaper");
+  if(dp.length>0){
+    const g = avgGapMin(dp.map(r=>r.ts));
+    cards.push(`<div class="ds-card" style="--c:#b08968">
+      <div class="ds-lbl">🧷 기저귀</div>
+      ${stat(`${dp.length}<small>회</small>`, "횟수")}
+      ${stat(g!=null?durText(g):"–", "평균 텀")}
+    </div>`);
+  }
+  // 잠: 낮잠(8~20시)/밤잠(그 외), 각각 횟수 + 평균 수면 길이
+  const sl = dayRecs.filter(r=>r.type==="sleep");
+  if(sl.length>0){
+    const naps = sl.filter(r=>{ const h=new Date(r.ts).getHours(); return h>=8 && h<20; });
+    const nights = sl.filter(r=>{ const h=new Date(r.ts).getHours(); return h<8 || h>=20; });
+    const avgLen = (arr)=> arr.length ? arr.reduce((s,r)=>s+(r.mins||0),0)/arr.length : null;
+    const sleepStat = (label, arr)=>{
+      const a = avgLen(arr);
+      const val = arr.length ? `${arr.length}<small>회</small> · ${a!=null?durText(a):"–"}` : "–";
+      return stat(val, label);
+    };
+    cards.push(`<div class="ds-card" style="--c:#8a7dc4">
+      <div class="ds-lbl">😴 잠</div>
+      ${sleepStat("☀️ 낮잠 평균", naps)}
+      ${sleepStat("🌙 밤잠 평균", nights)}
+    </div>`);
+  }
+  // 평균치는 수유·기저귀·잠만 표시 (체온·투약은 제외)
+  el.innerHTML = cards.length ? cards.join("") : "";
+  el.style.display = cards.length ? "flex" : "none";
 }
 // 데일리 상단 원더윅스 배너 갱신
 function updateWwBanner(baby){
