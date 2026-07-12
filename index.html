@@ -101,6 +101,18 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
 }
 .agecard .ac-milestone-btn:hover { box-shadow:0 3px 11px rgba(224,124,58,.4); }
 .agecard .ac-milestone-btn:active { transform:scale(.98); }
+/* 기념일 전체 일정 목록 */
+.agecard .ms-list-title { font-size:12px; font-weight:800; color:#c4843c; margin:16px 0 8px; }
+.agecard .ms-list { display:flex; flex-direction:column; gap:5px; }
+.ms-row { display:flex; align-items:center; gap:8px; padding:8px 11px; border-radius:10px; background:#fff; border:1px solid #f2e4d6; font-size:12.5px; }
+.ms-row .ms-day { font-weight:800; color:#6b4226; min-width:56px; }
+.ms-row .ms-date { flex:1; color:#8a6b52; }
+.ms-row .ms-dd { font-size:11px; font-weight:800; padding:2px 9px; border-radius:9px; white-space:nowrap; }
+.ms-row.future .ms-dd { background:#eaf4fb; color:#4a86c4; }
+.ms-row.today { border-color:#f0904a; box-shadow:0 0 0 1.5px rgba(240,144,74,.25); }
+.ms-row.today .ms-dd { background:#f0904a; color:#fff; }
+.ms-row.past { opacity:.5; }
+.ms-row.past .ms-dd { background:#eee6dc; color:#a08a78; }
 .resetrow { margin-top: 22px; padding-top: 18px; border-top: 1px solid #f0e2d4; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .resetbtn {
   background: #fff; border: 1px solid #e3b0a0; color: #c0502e; border-radius: 10px;
@@ -628,9 +640,9 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
     <div class="setup">
       <!-- 설정 하위 탭 (정보 입력 후에만 노출) -->
       <div class="setnav" id="setNav" style="display:none">
-        <button class="settab active" data-set="milestone" onclick="goSet('milestone')">🎂 아이 기념일</button>
-        <button class="settab" data-set="tabs" onclick="goSet('tabs')">📑 보기 탭 설정</button>
-        <button class="settab" data-set="babyinfo" onclick="goSet('babyinfo')">👶 우리 아기 정보</button>
+        <button class="settab active" data-set="milestone" onclick="goSet('milestone')">🎂 기념일</button>
+        <button class="settab" data-set="tabs" onclick="goSet('tabs')">📑 메뉴 설정</button>
+        <button class="settab" data-set="babyinfo" onclick="goSet('babyinfo')">👶 아기 정보</button>
       </div>
 
       <!-- 하위: 아이 기념일 -->
@@ -1595,6 +1607,21 @@ function renderAgeCards(){
     const a = diffMonthsDays(bd, now);
     const totalMonths = a.months;
     const bornDays = daysSinceBirth(b.birth, now);
+    // 기념일 목록(전체) — 지난 것/오늘/다가올 것 표시
+    const rows = MILESTONE_DAYS.map(dn=>{
+      const d = milestoneDate(b.birth, dn); d.setHours(0,0,0,0);
+      const label = (dn===365) ? "첫 생일 · 365일" : `${dn}일`;
+      const diff = Math.round((d-now)/86400000);
+      let stateCls, ddText;
+      if(diff<0){ stateCls="past"; ddText="지남"; }
+      else if(diff===0){ stateCls="today"; ddText="오늘!"; }
+      else { stateCls="future"; ddText=`D-${diff}`; }
+      return `<div class="ms-row ${stateCls}">
+        <span class="ms-day">${label}</span>
+        <span class="ms-date">${fmtDate(d)}</span>
+        <span class="ms-dd">${ddText}</span>
+      </div>`;
+    }).join("");
     return `<div class="agecard">
       ${nameLine}
       <div class="ac-row">
@@ -1602,14 +1629,17 @@ function renderAgeCards(){
         <div class="ac-box"><div class="ac-num">${bornDays}<small>일째</small></div><div class="ac-lbl">생후 일수</div></div>
       </div>
       <div class="ac-born">📅 ${fmtDate(bd)} 출생</div>
+      <div class="ms-list-title">🎈 기념일 전체 일정</div>
+      <div class="ms-list">${rows}</div>
       <button class="ac-milestone-btn" onclick="downloadMilestoneICS(${i})">🎂 아이 기념일 캘린더 내보내기</button>
     </div>`;
   }).join("");
 }
 // 생후 기념일(일수) 목록
 const MILESTONE_DAYS = [50, 100, 200, 300, 365, 500, 600, 700, 777, 800, 900, 1000];
-// 생후 N일째의 실제 날짜 (출생일=1일째 → 출생일 + (N-1)일)
-function milestoneDate(birthStr, dayNo){ return addDays(parseDate(birthStr), dayNo-1); }
+// 생후 N일 기념일의 실제 날짜 (출생일로부터 N일 경과 = 출생일 + N일)
+// 예: 365일 = 출생 1주년(같은 월·일). 300일·200일 등도 birth+N로 계산.
+function milestoneDate(birthStr, dayNo){ return addDays(parseDate(birthStr), dayNo); }
 // 아이 기념일 .ics 내보내기
 function downloadMilestoneICS(babyIdx){
   const baby = babies[babyIdx];
