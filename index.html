@@ -1610,7 +1610,7 @@ function renderAgeCards(){
     // 기념일 목록(전체) — 지난 것/오늘/다가올 것 표시
     const rows = MILESTONE_DAYS.map(dn=>{
       const d = milestoneDate(b.birth, dn); d.setHours(0,0,0,0);
-      const label = (dn===365) ? "첫 생일 · 365일" : `${dn}일`;
+      const label = (dn===MILESTONE_BIRTHDAY) ? "🎂 생일" : `${dn}일`;
       const diff = Math.round((d-now)/86400000);
       let stateCls, ddText;
       if(diff<0){ stateCls="past"; ddText="지남"; }
@@ -1636,10 +1636,13 @@ function renderAgeCards(){
   }).join("");
 }
 // 생후 기념일(일수) 목록
-const MILESTONE_DAYS = [50, 100, 200, 300, 365, 500, 600, 700, 777, 800, 900, 1000];
-// 생후 N일 기념일의 실제 날짜 (출생일로부터 N일 경과 = 출생일 + N일)
-// 예: 365일 = 출생 1주년(같은 월·일). 300일·200일 등도 birth+N로 계산.
-function milestoneDate(birthStr, dayNo){ return addDays(parseDate(birthStr), dayNo); }
+const MILESTONE_DAYS = [50, 100, 200, 300, 366, 500, 600, 700, 777, 800, 900, 1000];
+// 366일째 = 첫 생일(출생 1주년, 같은 월·일). 목록·캘린더에서 '생일'로 표시.
+const MILESTONE_BIRTHDAY = 366;
+// 생후 N일 기념일의 실제 날짜 — 원더윅스·데일리의 생후일수 기준과 통일.
+// 출생일 당일=생후 1일이므로, 생후 N일 = 출생일 + (N-1)일.
+// (검증: 그날의 daysSinceBirth가 정확히 N이 됨. 6/30생 → 100일=10/07)
+function milestoneDate(birthStr, dayNo){ return addDays(parseDate(birthStr), dayNo-1); }
 // 아이 기념일 .ics 내보내기
 function downloadMilestoneICS(babyIdx){
   const baby = babies[babyIdx];
@@ -1655,17 +1658,20 @@ function downloadMilestoneICS(babyIdx){
   MILESTONE_DAYS.forEach(dn=>{
     const d = milestoneDate(baby.birth, dn);
     const dtEndExclusive = addDays(d, 1);
-    const label = (dn===365) ? "첫 생일 (365일)" : `${dn}일`;
+    const isBday = (dn===MILESTONE_BIRTHDAY);
+    const summary = isBday ? `🎂 ${nm} 첫 생일` : `🎂 ${nm} 생후 ${dn}일`;
+    const desc = isBday ? `${nm}의 첫 생일을 축하해요!` : `${nm} 생후 ${dn}일을 축하해요!`;
+    const alarmLbl = isBday ? `${nm} 첫 생일` : `${nm} 생후 ${dn}일`;
     const uid = `mstone-${baby.id}-${dn}@babyplanner`;
     lines.push("BEGIN:VEVENT");
     lines.push(`UID:${uid}`);
     lines.push(`DTSTAMP:${stamp}`);
     lines.push(`DTSTART;VALUE=DATE:${icsDate(d)}`);
     lines.push(`DTEND;VALUE=DATE:${icsDate(dtEndExclusive)}`);
-    lines.push(`SUMMARY:${icsEsc("🎂 "+nm+" 생후 "+label)}`);
-    lines.push(`DESCRIPTION:${icsEsc(nm+" 생후 "+dn+"일을 축하해요!")}`);
-    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(nm+" 생후 "+label+" 하루 전")}`,"TRIGGER:-P0DT15H","END:VALARM");
-    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(nm+" 생후 "+label)}`,"TRIGGER:PT9H","END:VALARM");
+    lines.push(`SUMMARY:${icsEsc(summary)}`);
+    lines.push(`DESCRIPTION:${icsEsc(desc)}`);
+    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(alarmLbl+" 하루 전")}`,"TRIGGER:-P0DT15H","END:VALARM");
+    lines.push("BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(alarmLbl)}`,"TRIGGER:PT9H","END:VALARM");
     lines.push("END:VEVENT");
   });
   lines.push("END:VCALENDAR");
