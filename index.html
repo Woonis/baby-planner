@@ -335,6 +335,8 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .ww-now .wwn-desc { font-size:12.5px; color:#7a5c48; margin-top:5px; line-height:1.5; }
 .ww-cal .calcell.ww-leap { background:#fbeaf3; border-color:#e7b6d5; }
 .ww-cal .calcell.ww-leap .dnum { color:#a24d86; }
+.ww-cal .calcell.ww-today { border:2px solid #f0904a; box-shadow:0 0 0 2px rgba(240,144,74,.18); }
+.ww-cal .calcell .today-dot { display:inline-block; font-size:8px; font-weight:800; color:#fff; background:#f0904a; border-radius:7px; padding:0 5px; margin-left:4px; vertical-align:middle; }
 .ww-cal .calcell .wwlbl { font-size:9.5px; color:#a08a78; line-height:1.25; }
 .ww-cal .calcell .wwleapbadge { margin-top:auto; align-self:flex-start; font-size:9px; font-weight:800; padding:1px 7px; border-radius:9px; background:#f4d9ea; color:#a24d86; }
 .ww-legend { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 4px; font-size:11.5px; color:#7a5c48; }
@@ -343,19 +345,27 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .ww-legend .sw.leap { background:#fbeaf3; border:1.5px solid #e7b6d5; }
 .ww-legend .sw.calm { background:#fff; border:1.5px solid #e6d7c8; }
 .ww-h3 { font-size:15px; font-weight:800; color:#6b4226; margin:26px 0 12px; }
-.ww-cards { display:flex; flex-direction:column; gap:10px; }
-.ww-card {
-  border:1px solid #ecdccb; border-radius:14px; padding:13px 15px; background:#fff;
-  box-shadow:0 2px 7px rgba(120,90,60,.06); border-left:5px solid #e7b6d5;
+/* 도약기 살펴보기 — 좌우 네비 + 단일 포커스 카드 */
+.ww-focusbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.ww-focus-title { flex:1; text-align:center; font-size:13px; font-weight:800; color:#a24d86; }
+.ww-focus {
+  border:1.5px solid #e7c6dd; border-radius:18px; padding:20px 18px; background:linear-gradient(135deg,#fff5fb,#fdeef6);
+  box-shadow:0 3px 12px rgba(150,90,140,.10);
 }
-.ww-card.active { border-left-color:#a24d86; background:#fdf5fa; }
-.ww-card .wc-head { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
-.ww-card .wc-no { font-size:13px; font-weight:800; color:#a24d86; }
-.ww-card .wc-name { font-size:14px; font-weight:800; color:#6b4226; }
-.ww-card .wc-wk { font-size:11px; color:#a08a78; margin-left:auto; }
-.ww-card .wc-nowtag { font-size:10px; font-weight:800; color:#fff; background:#a24d86; border-radius:8px; padding:1px 8px; }
-.ww-card .wc-desc { font-size:12.5px; color:#7a5c48; margin-top:6px; line-height:1.5; }
-.ww-card .wc-meta { font-size:11px; color:#a08a78; margin-top:5px; }
+.ww-focus.next { border-color:#e7b6d5; }
+.ww-focus.now { border-color:#a24d86; background:linear-gradient(135deg,#fdeef6,#f9e2ef); }
+.ww-focus.past { border-color:#e3d3c4; background:#faf6f2; }
+.ww-focus .wf-tag { display:inline-block; font-size:11px; font-weight:800; padding:2px 11px; border-radius:9px; background:#f4d9ea; color:#a24d86; }
+.ww-focus.now .wf-tag { background:#a24d86; color:#fff; }
+.ww-focus.past .wf-tag { background:#eadfd4; color:#9a8470; }
+.ww-focus .wf-no { font-size:12.5px; font-weight:800; color:#a24d86; margin-top:12px; }
+.ww-focus .wf-name { font-size:21px; font-weight:800; color:#6b4226; margin-top:2px; line-height:1.2; }
+.ww-focus .wf-date { font-size:17px; font-weight:800; color:#a24d86; margin-top:12px; line-height:1.35; }
+.ww-focus .wf-dday { display:inline-block; font-size:13px; font-weight:800; color:#fff; background:#e0679e; border-radius:10px; padding:3px 12px; margin-top:8px; }
+.ww-focus .wf-dday.now { background:#a24d86; }
+.ww-focus .wf-dday.past { background:#b7a595; }
+.ww-focus .wf-desc { font-size:13px; color:#7a5c48; margin-top:14px; line-height:1.6; }
+.ww-focus .wf-meta { font-size:11.5px; color:#a08a78; margin-top:8px; }
 
 /* 식단 편집 모달 */
 .modal-bg {
@@ -516,15 +526,15 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .dr-clock-empty { text-align:center; color:#b0a294; font-size:13px; padding:20px; }
 .dr-datebar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .dr-datetitle { font-size:16px; font-weight:700; color:#6b4226; }
-.dr-datebar .navbtn, .ww-cal-bar .navbtn {
+.dr-datebar .navbtn, .ww-cal-bar .navbtn, .ww-focusbar .navbtn {
   flex-shrink:0; width:38px; height:38px; border-radius:12px; cursor:pointer;
   border:none; background:linear-gradient(135deg,#fbb47d,#f0904a); color:#fff;
   font-size:18px; font-weight:800; line-height:1; display:flex; align-items:center; justify-content:center;
   box-shadow:0 2px 6px rgba(224,124,58,.30); transition:transform .08s, box-shadow .12s, opacity .12s;
 }
-.dr-datebar .navbtn:hover, .ww-cal-bar .navbtn:hover { box-shadow:0 3px 10px rgba(224,124,58,.42); }
-.dr-datebar .navbtn:active, .ww-cal-bar .navbtn:active { transform:scale(.92); }
-.dr-datebar .navbtn:disabled, .ww-cal-bar .navbtn:disabled {
+.dr-datebar .navbtn:hover, .ww-cal-bar .navbtn:hover, .ww-focusbar .navbtn:hover { box-shadow:0 3px 10px rgba(224,124,58,.42); }
+.dr-datebar .navbtn:active, .ww-cal-bar .navbtn:active, .ww-focusbar .navbtn:active { transform:scale(.92); }
+.dr-datebar .navbtn:disabled, .ww-cal-bar .navbtn:disabled, .ww-focusbar .navbtn:disabled {
   background:#f0e6db; color:#c9b7a6; box-shadow:none; cursor:not-allowed;
 }
 .dr-list { display:flex; flex-direction:column; gap:8px; }
@@ -754,8 +764,13 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
       </div>
       <div class="ww-cal" id="wwCalendar"></div>
       <div class="ww-legend" id="wwLegend"></div>
-      <h3 class="ww-h3">📖 도약기별 특징</h3>
-      <div class="ww-cards" id="wwCards"></div>
+      <h3 class="ww-h3">📖 도약기 살펴보기</h3>
+      <div class="ww-focusbar">
+        <button class="navbtn" id="wwFocusPrev" onclick="moveWwFocus(-1)">‹</button>
+        <div class="ww-focus-title" id="wwFocusTitle"></div>
+        <button class="navbtn" id="wwFocusNext" onclick="moveWwFocus(1)">›</button>
+      </div>
+      <div class="ww-focus" id="wwFocus"></div>
       <div class="vac-note">※ 원더윅스는 참고용 발달 이론이에요. 아기마다 시기·양상이 다를 수 있어요.</div>
     </section>
   </div>
@@ -2781,7 +2796,7 @@ function moveWwMonth(delta){
   if(wwM<1){ wwM=12; wwY--; } else if(wwM>12){ wwM=1; wwY++; }
   renderWonder();
 }
-function selectWonderBaby(i){ setActiveBaby(i); renderWonder(); }
+function selectWonderBaby(i){ setActiveBaby(i); wwFocusIdx=null; renderWonder(); }
 function renderWonder(){
   if(!document.getElementById("wwCalendar")) return;
   const multi = babies.length>1;
@@ -2829,18 +2844,20 @@ function renderWonder(){
   const startDow = first.getDay();
   const daysInMonth = new Date(wwY, wwM, 0).getDate();
   for(let i=0;i<startDow;i++) html += `<div class="calcell empty"></div>`;
+  const todayKey = ymd(new Date());
   for(let d=1; d<=daysInMonth; d++){
     const cellDate = new Date(wwY, wwM-1, d); cellDate.setHours(0,0,0,0);
     const dow = cellDate.getDay();
     const dowCls = dow===0?'sun':dow===6?'sat':'';
     const L = leapAt(baby.birth, cellDate);
     const before = cellDate < new Date(bd.getFullYear(),bd.getMonth(),bd.getDate());
+    const isToday = ymd(cellDate)===todayKey;
     const ageHere = diffMonthsDays(bd, cellDate);
     const bDay = daysSinceBirth(baby.birth, cellDate);
     const ageLine = before ? `<div class="wwlbl">출생 전</div>` : `<div class="wwlbl">만 ${ageHere.months}개월 ${ageHere.days}일<br>생후 ${bDay}일</div>`;
     const badge = L ? `<span class="wwleapbadge">${L.no}차</span>` : "";
-    html += `<div class="calcell ${L?'ww-leap':''}" ${L?`title="${L.no}차 ${L.name} (${L.dur})"`:''}>
-      <div class="dnum ${dowCls}">${d}</div>
+    html += `<div class="calcell ${L?'ww-leap':''} ${isToday?'ww-today':''}" ${L?`title="${L.no}차 ${L.name} (${L.dur})"`:''}>
+      <div class="dnum ${dowCls}">${d}${isToday?'<span class="today-dot">오늘</span>':''}</div>
       ${ageLine}
       ${badge}
     </div>`;
@@ -2853,22 +2870,64 @@ function renderWonder(){
     `<span class="lg"><span class="sw leap"></span> 도약기(원더윅스) 기간</span>
      <span class="lg"><span class="sw calm"></span> 맑음 구간</span>`;
 
-  // 차수별 특징 카드
-  const cards = document.getElementById("wwCards");
-  cards.innerHTML = WONDER.map(L=>{
-    const r = leapDateRange(baby.birth, L);
-    const isNow = nowLeap && nowLeap.no===L.no;
-    return `<div class="ww-card ${isNow?'active':''}">
-      <div class="wc-head">
-        <span class="wc-no">${L.no}차</span>
-        <span class="wc-name">${L.name}</span>
-        ${isNow?'<span class="wc-nowtag">지금</span>':''}
-        <span class="wc-wk">${L.ws}~${L.we}주</span>
-      </div>
-      <div class="wc-desc">${L.desc}</div>
-      <div class="wc-meta">📅 ${fmtDate(r.start)} ~ ${fmtDate(r.end)} · 지속 ${L.dur}</div>
-    </div>`;
-  }).join("");
+  // 도약기 살펴보기 — 단일 포커스 카드(기본: 다음 도약기)
+  renderWwFocus(baby);
+}
+// 포커스 중인 도약기 인덱스(0~9). null이면 자동(다음 도약기)로 초기화
+let wwFocusIdx = null;
+function defaultFocusIdx(baby){
+  const bd = parseDate(baby.birth); bd.setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wk = Math.floor((today - bd)/(86400000*7));
+  // 진행 중이면 그 도약기, 아니면 다음 도약기, 다 지났으면 마지막
+  const nowIdx = WONDER.findIndex(L=> wk>=L.ws && wk<=L.we);
+  if(nowIdx>=0) return nowIdx;
+  const nextIdx = WONDER.findIndex(L=> L.ws > wk);
+  return nextIdx>=0 ? nextIdx : WONDER.length-1;
+}
+function moveWwFocus(delta){
+  const baby = babies[activeBabyIdx] || babies[0];
+  if(wwFocusIdx===null) wwFocusIdx = defaultFocusIdx(baby);
+  wwFocusIdx = Math.max(0, Math.min(WONDER.length-1, wwFocusIdx+delta));
+  renderWwFocus(baby);
+}
+function renderWwFocus(baby){
+  const el = document.getElementById("wwFocus");
+  if(!el) return;
+  if(wwFocusIdx===null) wwFocusIdx = defaultFocusIdx(baby);
+  const L = WONDER[wwFocusIdx];
+  const r = leapDateRange(baby.birth, L);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(r.start); start.setHours(0,0,0,0);
+  const end = new Date(r.end); end.setHours(0,0,0,0);
+  // 상태: 지남 / 진행중 / 예정
+  let state, tag, dday;
+  if(today > end){
+    state="past"; tag="지나감";
+    const daysAgo = Math.round((today-end)/86400000);
+    dday = `${daysAgo}일 전 종료`;
+  } else if(today >= start){
+    state="now"; tag="진행 중";
+    const left = Math.round((end-today)/86400000);
+    dday = left>0 ? `종료까지 D-${left}` : "오늘 종료";
+  } else {
+    state="next"; tag="다가올 도약기";
+    const left = Math.round((start-today)/86400000);
+    dday = left===0 ? "오늘 시작!" : `시작까지 D-${left}`;
+  }
+  el.className = "ww-focus " + state;
+  el.innerHTML = `
+    <span class="wf-tag">${tag}</span>
+    <div class="wf-no">${L.no}차 도약기 · ${L.ws}~${L.we}주</div>
+    <div class="wf-name">${L.name}</div>
+    <div class="wf-date">📅 ${fmtDate(r.start)}<br>~ ${fmtDate(r.end)}</div>
+    <span class="wf-dday ${state}">${dday}</span>
+    <div class="wf-desc">${L.desc}</div>
+    <div class="wf-meta">지속 ${L.dur} · 도약기엔 평소보다 보채거나 매달릴 수 있어요.</div>`;
+  // 제목 + 좌우 버튼 비활성 처리
+  document.getElementById("wwFocusTitle").textContent = `${L.no}차 / 총 ${WONDER.length}차`;
+  document.getElementById("wwFocusPrev").disabled = (wwFocusIdx<=0);
+  document.getElementById("wwFocusNext").disabled = (wwFocusIdx>=WONDER.length-1);
 }
 // 목록/일과표 보기 전환
 let drView = "list";
