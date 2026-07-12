@@ -301,6 +301,49 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .countbadge.under { background:#fff3e0; color:#c47d1a; }
 .calcell.pre .agelbl { color:#bbae9f; }
 
+/* 원더윅스 */
+.ww-banner {
+  display:flex; align-items:center; gap:10px; margin:14px 0;
+  background:linear-gradient(135deg,#fff2f7,#eef3ff); border:1.5px solid #e7c6dd;
+  border-radius:14px; padding:12px 14px; cursor:pointer; box-shadow:0 2px 8px rgba(150,110,160,.10);
+}
+.ww-banner .wwb-ico { font-size:24px; }
+.ww-banner .wwb-tit { font-weight:800; color:#a24d86; font-size:14.5px; }
+.ww-banner .wwb-sub { font-size:11.5px; color:#8a6b82; margin-top:2px; line-height:1.35; }
+.ww-banner .wwb-go { margin-left:auto; font-size:11px; color:#a24d86; font-weight:700; white-space:nowrap; }
+.ww-now {
+  border-radius:14px; padding:14px 16px; margin:16px 0 4px;
+  border:1.5px solid #e7c6dd; background:linear-gradient(135deg,#fff2f7,#eef3ff);
+}
+.ww-now.calm { border-color:#cfe6d6; background:linear-gradient(135deg,#f0faf2,#eef6ff); }
+.ww-now .wwn-tag { display:inline-block; font-size:11px; font-weight:800; padding:2px 10px; border-radius:9px; background:#f4d9ea; color:#a24d86; }
+.ww-now.calm .wwn-tag { background:#dcefe0; color:#3a8a5a; }
+.ww-now .wwn-tit { font-weight:800; color:#6b4226; font-size:15px; margin-top:8px; }
+.ww-now .wwn-desc { font-size:12.5px; color:#7a5c48; margin-top:5px; line-height:1.5; }
+.ww-cal .calcell.ww-leap { background:#fbeaf3; border-color:#e7b6d5; }
+.ww-cal .calcell.ww-leap .dnum { color:#a24d86; }
+.ww-cal .calcell .wwlbl { font-size:9.5px; color:#a08a78; line-height:1.25; }
+.ww-cal .calcell .wwleapbadge { margin-top:auto; align-self:flex-start; font-size:9px; font-weight:800; padding:1px 7px; border-radius:9px; background:#f4d9ea; color:#a24d86; }
+.ww-legend { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 4px; font-size:11.5px; color:#7a5c48; }
+.ww-legend .lg { display:flex; align-items:center; gap:6px; }
+.ww-legend .sw { width:14px; height:14px; border-radius:4px; display:inline-block; }
+.ww-legend .sw.leap { background:#fbeaf3; border:1.5px solid #e7b6d5; }
+.ww-legend .sw.calm { background:#fff; border:1.5px solid #e6d7c8; }
+.ww-h3 { font-size:15px; font-weight:800; color:#6b4226; margin:26px 0 12px; }
+.ww-cards { display:flex; flex-direction:column; gap:10px; }
+.ww-card {
+  border:1px solid #ecdccb; border-radius:14px; padding:13px 15px; background:#fff;
+  box-shadow:0 2px 7px rgba(120,90,60,.06); border-left:5px solid #e7b6d5;
+}
+.ww-card.active { border-left-color:#a24d86; background:#fdf5fa; }
+.ww-card .wc-head { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.ww-card .wc-no { font-size:13px; font-weight:800; color:#a24d86; }
+.ww-card .wc-name { font-size:14px; font-weight:800; color:#6b4226; }
+.ww-card .wc-wk { font-size:11px; color:#a08a78; margin-left:auto; }
+.ww-card .wc-nowtag { font-size:10px; font-weight:800; color:#fff; background:#a24d86; border-radius:8px; padding:1px 8px; }
+.ww-card .wc-desc { font-size:12.5px; color:#7a5c48; margin-top:6px; line-height:1.5; }
+.ww-card .wc-meta { font-size:11px; color:#a08a78; margin-top:5px; }
+
 /* 식단 편집 모달 */
 .modal-bg {
   display: none; position: fixed; inset: 0; background: rgba(60,40,25,.4); z-index: 50;
@@ -501,6 +544,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
   <div class="mainnav-inner" id="mainnav">
     <button class="maintab active" data-page="info" id="infoTab" onclick="goPage('info')">👶 우리 아기 정보</button>
     <button class="maintab locked" data-page="daily" onclick="goPage('daily')">🍼 데일리 기록 <span class="lockicon">🔒</span></button>
+    <button class="maintab locked" data-page="wonder" onclick="goPage('wonder')">🌈 원더윅스 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="growth" onclick="goPage('growth')">📈 성장 기록 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="vaccine" onclick="goPage('vaccine')">💉 예방접종 <span class="lockicon">🔒</span></button>
     <button class="maintab locked" data-page="food" onclick="goPage('food')">🍚 이유식 <span class="lockicon">🔒</span></button>
@@ -530,6 +574,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
         <div class="ts-title">📑 보기 탭 선택</div>
         <div class="ts-desc">보고 싶은 탭만 켜두세요. 데일리 기록은 항상 표시돼요.</div>
         <label class="ts-opt"><input type="checkbox" checked disabled> 🍼 데일리 기록 <span class="ts-always">항상</span></label>
+        <label class="ts-opt"><input type="checkbox" id="tabchk-wonder" onchange="toggleTabVis('wonder',this.checked)"> 🌈 원더윅스 <span id="wwRecoMark"></span></label>
         <label class="ts-opt"><input type="checkbox" id="tabchk-growth" onchange="toggleTabVis('growth',this.checked)"> 📈 성장 기록</label>
         <label class="ts-opt"><input type="checkbox" id="tabchk-vaccine" onchange="toggleTabVis('vaccine',this.checked)"> 💉 예방접종 <span id="vacRecoMark"></span></label>
         <label class="ts-opt"><input type="checkbox" id="tabchk-food" onchange="toggleTabVis('food',this.checked)"> 🍚 이유식 <span id="foodRecoMark"></span></label>
@@ -614,6 +659,9 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
       <h2 class="sec">데일리 기록</h2>
       <div class="h2sub">수유·기저귀·잠을 하루 단위로 기록하고, 마지막으로 한 지 얼마나 됐는지 한눈에 확인해요.</div>
 
+      <!-- 원더윅스 배너 -->
+      <div class="ww-banner" id="dailyWwBanner" style="display:none" onclick="goPage('wonder')"></div>
+
       <!-- 최근 요약 -->
       <div class="dr-recent" id="drRecent"></div>
 
@@ -647,6 +695,26 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
       <div class="dr-list" id="drList"></div>
       <!-- 24시간 원형 일과표 -->
       <div id="drClock" style="display:none"></div>
+    </section>
+  </div>
+
+  <!-- 페이지: 원더윅스 -->
+  <div class="page" id="page-wonder">
+    <section style="margin-top:24px">
+      <div class="babysel" id="wonderBabySel" style="display:none"></div>
+      <h2 class="sec">원더윅스 (도약기)</h2>
+      <div class="h2sub">출생일 기준으로 10번의 도약기(정신적 성장 급등기)를 계산해요. 도약기엔 아기가 평소보다 보채고 매달릴 수 있어요.</div>
+      <div class="ww-now" id="wwNow"></div>
+      <div class="dr-datebar">
+        <button class="navbtn" id="wwPrev" onclick="moveWwMonth(-1)">‹</button>
+        <div class="dr-datetitle" id="wwMonthTitle"></div>
+        <button class="navbtn" id="wwNext" onclick="moveWwMonth(1)">›</button>
+      </div>
+      <div class="ww-cal" id="wwCalendar"></div>
+      <div class="ww-legend" id="wwLegend"></div>
+      <h3 class="ww-h3">📖 도약기별 특징</h3>
+      <div class="ww-cards" id="wwCards"></div>
+      <div class="vac-note">※ 원더윅스는 참고용 발달 이론이에요. 아기마다 시기·양상이 다를 수 있어요.</div>
     </section>
   </div>
 
@@ -904,7 +972,7 @@ function setActiveBaby(i){ activeBabyIdx = i; setup = babies[activeBabyIdx]; }
 function saveBabies(){ localStorage.setItem(SKEY2, JSON.stringify(babies)); }
 // 탭 표시 설정 (데일리는 항상 표시. growth/vaccine/food 켜고 끄기)
 const TVKEY = "babyplanner_tabvis_v1";
-let tabVis = { growth:true, vaccine:true, food:true };
+let tabVis = { wonder:true, growth:true, vaccine:true, food:true };
 try { const t=JSON.parse(localStorage.getItem(TVKEY)); if(t) tabVis=Object.assign(tabVis,t); } catch(e){}
 function saveTabVis(){ localStorage.setItem(TVKEY, JSON.stringify(tabVis)); }
 function babyName(i){ return babies[i] && babies[i].name ? babies[i].name : (babies.length>1 ? `${i+1}번째 아이` : "우리 아기"); }
@@ -1575,7 +1643,7 @@ function relockTabs(){
 }
 // 켜둔 탭만 네비에 노출 (데일리는 항상)
 function applyTabVis(){
-  ["growth","vaccine","food"].forEach(p=>{
+  ["wonder","growth","vaccine","food"].forEach(p=>{
     const tab=document.querySelector(`.maintab[data-page="${p}"]`);
     if(tab) tab.classList.toggle("hidden-tab", !tabVis[p]);
   });
@@ -1591,6 +1659,7 @@ function toggleTabVis(page, on){
 }
 // 설정 패널: 체크 상태 + 추천/알림 마킹
 function renderTabSettings(){
+  const w=document.getElementById("tabchk-wonder"); if(w) w.checked=!!tabVis.wonder;
   const g=document.getElementById("tabchk-growth"); if(g) g.checked=!!tabVis.growth;
   const v=document.getElementById("tabchk-vaccine"); if(v) v.checked=!!tabVis.vaccine;
   const f=document.getElementById("tabchk-food"); if(f) f.checked=!!tabVis.food;
@@ -1613,6 +1682,12 @@ function renderTabSettings(){
     });
     vm.innerHTML = (soon && !tabVis.vaccine) ? `<span class="reco-mark vac">접종 임박!</span>` : "";
   }
+  // 원더윅스: 지금 도약기인 아이가 있으면
+  const wm=document.getElementById("wwRecoMark");
+  if(wm){
+    const inLeap = babies.some(b=> leapAt(b.birth, new Date()));
+    wm.innerHTML = (inLeap && !tabVis.wonder) ? `<span class="reco-mark">지금 도약기!</span>` : "";
+  }
 }
 let curSub = "roadmap"; // 이유식 탭 내 현재 하위 페이지
 function goPage(name){
@@ -1621,6 +1696,7 @@ function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id==="page-"+name));
   document.getElementById("gearBtn").classList.toggle("active", name==="info");
   if(name==="daily") renderDaily();
+  if(name==="wonder") renderWonder();
   if(name==="vaccine") renderVaccine();
   if(name==="growth") renderGrowth();
   if(name==="food") goSub(curSub);
@@ -2492,8 +2568,149 @@ function renderDaily(){
   }).join("");
   // 24시간 일과표
   document.getElementById("drClock").innerHTML = buildDayClock(dayRecs);
+  // 원더윅스 배너 (오늘 기준)
+  updateWwBanner(baby);
+}
+// 데일리 상단 원더윅스 배너 갱신
+function updateWwBanner(baby){
+  const el = document.getElementById("dailyWwBanner");
+  if(!el) return;
+  const leap = currentLeap(baby.birth, new Date());
+  if(!leap){ el.style.display="none"; el.innerHTML=""; return; }
+  el.style.display="flex";
+  el.innerHTML = `<span class="wwb-ico">🌈</span>
+    <div><div class="wwb-tit">지금 ${leap.no}차 도약기예요 · ${leap.name}</div>
+    <div class="wwb-sub">${leap.desc} 평소보다 보채거나 매달릴 수 있어요.</div></div>
+    <span class="wwb-go">원더윅스 보기 ›</span>`;
 }
 function selectDailyBaby(i){ setActiveBaby(i); renderDaily(); }
+
+/* ===== 원더윅스 (도약기) ===== */
+// 출생일 기준 주차(도약기 판정용). weekStart~weekEnd는 '출생 후 완료 주차'
+const WONDER = [
+  {no:1,  name:"감각의 도약",       ws:4,  we:5,  dur:"약 1주",     desc:"주변 환경(빛·소리·냄새)에 더 예민하게 반응하기 시작해요."},
+  {no:2,  name:"패턴의 도약",       ws:7,  we:9,  dur:"약 1~2주",   desc:"그림자·소리처럼 반복되는 단순한 패턴을 알아차려요."},
+  {no:3,  name:"미묘한 변화의 도약", ws:11, we:12, dur:"약 1~2주",   desc:"소리의 높낮이, 움직임의 부드러운 변화를 구별해요."},
+  {no:4,  name:"사건의 도약",       ws:14, we:19, dur:"약 2~3주",   desc:"원인과 결과(딸랑이를 흔들면 소리가 남)를 이해하기 시작해요."},
+  {no:5,  name:"관계의 도약",       ws:22, we:26, dur:"약 2~3주",   desc:"사물 간 거리·엄마와의 분리를 인지해요. 분리불안이 시작될 수 있어요."},
+  {no:6,  name:"범주의 도약",       ws:33, we:37, dur:"약 2~3주",   desc:"강아지·고양이가 '동물'이라는 범주에 속함을 배워요."},
+  {no:7,  name:"순서의 도약",       ws:41, we:46, dur:"약 3주",     desc:"블록을 순서대로 쌓거나 넣고 빼는 순서를 터득해요."},
+  {no:8,  name:"프로그램의 도약",   ws:50, we:54, dur:"약 3주",     desc:"밥 먹기·옷 입기 같은 일련의 루틴(순서 있는 과정)을 파악해요."},
+  {no:9,  name:"원칙의 도약",       ws:59, we:64, dur:"약 3~4주",   desc:"규칙을 시험하고 떼를 쓰며 자아가 형성되기 시작해요."},
+  {no:10, name:"시스템의 도약",     ws:70, we:75, dur:"약 4~5주",   desc:"가족·사회라는 큰 그림(시스템)을 이해하기 시작해요."},
+];
+// 특정 날짜의 도약기(있으면 객체, 없으면 null)
+function leapAt(birthStr, date){
+  const bd = parseDate(birthStr); bd.setHours(0,0,0,0);
+  const d = new Date(date); d.setHours(0,0,0,0);
+  const wk = Math.floor((d - bd)/(86400000*7)); // 출생 후 완료 주차
+  if(wk < 0) return null;
+  for(const L of WONDER){ if(wk >= L.ws && wk <= L.we) return L; }
+  return null;
+}
+function currentLeap(birthStr, date){ return leapAt(birthStr, date); }
+// 주차 도약 → 대략적 날짜 범위(달력 계산용). weekStart 시작일 ~ weekEnd 끝일
+function leapDateRange(birthStr, L){
+  const bd = parseDate(birthStr);
+  const start = addDays(bd, L.ws*7);
+  const end = addDays(bd, (L.we+1)*7 - 1);
+  return {start, end};
+}
+let wwY, wwM;
+function moveWwMonth(delta){
+  if(wwY===undefined){ const t=new Date(); wwY=t.getFullYear(); wwM=t.getMonth()+1; }
+  wwM += delta;
+  if(wwM<1){ wwM=12; wwY--; } else if(wwM>12){ wwM=1; wwY++; }
+  renderWonder();
+}
+function selectWonderBaby(i){ setActiveBaby(i); renderWonder(); }
+function renderWonder(){
+  if(!document.getElementById("wwCalendar")) return;
+  const multi = babies.length>1;
+  const baby = babies[activeBabyIdx] || babies[0];
+  if(!baby) return;
+
+  // 아기 선택 세그먼트
+  const selEl = document.getElementById("wonderBabySel");
+  if(selEl){
+    if(multi){ selEl.style.display="flex"; selEl.innerHTML = babies.map((b,i)=>`<button class="${i===activeBabyIdx?'active':''}" style="--bc:${babyColor(i)}" onclick="selectWonderBaby(${i})">${babyName(i)}</button>`).join(""); }
+    else { selEl.style.display="none"; selEl.innerHTML=""; }
+  }
+
+  // 현재(오늘) 도약기 배너
+  const nowEl = document.getElementById("wwNow");
+  const nowLeap = leapAt(baby.birth, new Date());
+  if(nowLeap){
+    nowEl.className = "ww-now";
+    nowEl.innerHTML = `<span class="wwn-tag">지금 ${nowLeap.no}차 도약기</span>
+      <div class="wwn-tit">${nowLeap.name} · ${nowLeap.dur}</div>
+      <div class="wwn-desc">${nowLeap.desc}<br>도약기엔 평소보다 보채고(crying) 매달리고(clingy) 칭얼댈(cranky) 수 있어요. 지나가면 새로운 능력이 나타나요.</div>`;
+  } else {
+    nowEl.className = "ww-now calm";
+    // 다음 도약기 안내
+    const bd = parseDate(baby.birth); bd.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const wk = Math.floor((today - bd)/(86400000*7));
+    const next = WONDER.find(L=>L.ws > wk);
+    let nextTxt = "";
+    if(wk < 0){ nextTxt = "아직 태어나기 전이에요."; }
+    else if(next){ const r=leapDateRange(baby.birth, next); nextTxt = `다음은 ${next.no}차 <b>${next.name}</b> — ${fmtDate(r.start)}쯤 시작될 수 있어요.`; }
+    else { nextTxt = "10번의 도약기를 모두 지났어요. 정말 대견해요!"; }
+    nowEl.innerHTML = `<span class="wwn-tag">지금은 맑음 구간 ☀️</span>
+      <div class="wwn-tit">도약기가 아니에요</div>
+      <div class="wwn-desc">${nextTxt}</div>`;
+  }
+
+  // 월 캘린더
+  if(wwY===undefined){ const t=new Date(); wwY=t.getFullYear(); wwM=t.getMonth()+1; }
+  document.getElementById("wwMonthTitle").textContent = `${wwY}년 ${wwM}월`;
+  const bd = parseDate(baby.birth);
+  const heads = ["일","월","화","수","목","금","토"];
+  let html = `<div class="calgrid">` + heads.map((h,i)=>`<div class="calhead ${i===0?'sun':i===6?'sat':''}">${h}</div>`).join("");
+  const first = new Date(wwY, wwM-1, 1);
+  const startDow = first.getDay();
+  const daysInMonth = new Date(wwY, wwM, 0).getDate();
+  for(let i=0;i<startDow;i++) html += `<div class="calcell empty"></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const cellDate = new Date(wwY, wwM-1, d); cellDate.setHours(0,0,0,0);
+    const dow = cellDate.getDay();
+    const dowCls = dow===0?'sun':dow===6?'sat':'';
+    const L = leapAt(baby.birth, cellDate);
+    const before = cellDate < new Date(bd.getFullYear(),bd.getMonth(),bd.getDate());
+    const ageHere = diffMonthsDays(bd, cellDate);
+    const ageLine = before ? `<div class="wwlbl">출생 전</div>` : `<div class="wwlbl">만 ${ageHere.months}개월 ${ageHere.days}일</div>`;
+    const badge = L ? `<span class="wwleapbadge">${L.no}차</span>` : "";
+    html += `<div class="calcell ${L?'ww-leap':''}" ${L?`title="${L.no}차 ${L.name} (${L.dur})"`:''}>
+      <div class="dnum ${dowCls}">${d}</div>
+      ${ageLine}
+      ${badge}
+    </div>`;
+  }
+  html += `</div>`;
+  document.getElementById("wwCalendar").innerHTML = html;
+
+  // 범례
+  document.getElementById("wwLegend").innerHTML =
+    `<span class="lg"><span class="sw leap"></span> 도약기(원더윅스) 기간</span>
+     <span class="lg"><span class="sw calm"></span> 맑음 구간</span>`;
+
+  // 차수별 특징 카드
+  const cards = document.getElementById("wwCards");
+  cards.innerHTML = WONDER.map(L=>{
+    const r = leapDateRange(baby.birth, L);
+    const isNow = nowLeap && nowLeap.no===L.no;
+    return `<div class="ww-card ${isNow?'active':''}">
+      <div class="wc-head">
+        <span class="wc-no">${L.no}차</span>
+        <span class="wc-name">${L.name}</span>
+        ${isNow?'<span class="wc-nowtag">지금</span>':''}
+        <span class="wc-wk">${L.ws}~${L.we}주</span>
+      </div>
+      <div class="wc-desc">${L.desc}</div>
+      <div class="wc-meta">📅 ${fmtDate(r.start)} ~ ${fmtDate(r.end)} · 지속 ${L.dur}</div>
+    </div>`;
+  }).join("");
+}
 // 목록/일과표 보기 전환
 let drView = "list";
 function setDrView(v){
