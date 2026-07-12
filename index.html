@@ -80,6 +80,19 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
   display: inline-block; background: #fff6ee; border: 1px solid #f3d9c5; border-radius: 20px;
   padding: 7px 16px; margin-top: 16px; font-size: 13px; color: #7a5238;
 }
+/* 나이/생후일수 카드 */
+.agecards { display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+.agecard {
+  background:linear-gradient(135deg,#fff6ee,#fdeede); border:1.5px solid #f3d3b8;
+  border-radius:16px; padding:14px 16px; box-shadow:0 2px 8px rgba(180,120,70,.08);
+}
+.agecard .ac-name { font-size:13px; font-weight:800; color:#c4843c; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
+.agecard .ac-row { display:flex; gap:10px; }
+.agecard .ac-box { flex:1; background:#fff; border-radius:12px; padding:10px 12px; text-align:center; border:1px solid #f5e2d0; }
+.agecard .ac-num { font-size:19px; font-weight:800; color:#6b4226; line-height:1.1; }
+.agecard .ac-num small { font-size:12px; font-weight:700; color:#a08a78; }
+.agecard .ac-lbl { font-size:11px; color:#a08a78; margin-top:3px; }
+.agecard .ac-born { font-size:11.5px; color:#8a6b52; margin-top:9px; text-align:center; }
 .resetrow { margin-top: 22px; padding-top: 18px; border-top: 1px solid #f0e2d4; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .resetbtn {
   background: #fff; border: 1px solid #e3b0a0; color: #c0502e; border-radius: 10px;
@@ -568,6 +581,7 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
       </div>
       <div id="babyForms"></div>
       <button class="applybtn" onclick="applySetup()">적용</button>
+      <div class="agecards" id="ageCards"></div>
       <div class="rec6" id="rec6"></div>
       <div class="babychip" id="babyChip"></div>
       <div class="tabsettings" id="tabSettings" style="display:none">
@@ -1479,6 +1493,33 @@ function renderChip(){
     return `${dot}${fmtDate(bd)}생 · ${agePart}`;
   });
   document.getElementById("babyChip").innerHTML = parts.join("<br>");
+  renderAgeCards();
+}
+// 우리 아기 정보: 개월수·생후일수 강조 카드
+function renderAgeCards(){
+  const el = document.getElementById("ageCards");
+  if(!el) return;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const multi = babies.length>1;
+  el.innerHTML = babies.map((b,i)=>{
+    const bd = parseDate(b.birth); bd.setHours(0,0,0,0);
+    const nm = b.name || (multi?`${i+1}번째 아이`:"우리 아기");
+    const nameLine = `<div class="ac-name"><span class="babytag" style="background:${babyColor(i)}">🍼</span> ${nm}</div>`;
+    if(now < bd){
+      return `<div class="agecard">${nameLine}<div class="ac-born">아직 태어나기 전이에요 · 출생 예정일 ${fmtDate(bd)}</div></div>`;
+    }
+    const a = diffMonthsDays(bd, now);
+    const totalMonths = a.months;
+    const bornDays = daysSinceBirth(b.birth, now);
+    return `<div class="agecard">
+      ${nameLine}
+      <div class="ac-row">
+        <div class="ac-box"><div class="ac-num">${totalMonths}<small>개월</small> ${a.days}<small>일</small></div><div class="ac-lbl">만 나이</div></div>
+        <div class="ac-box"><div class="ac-num">${bornDays}<small>일째</small></div><div class="ac-lbl">생후 일수</div></div>
+      </div>
+      <div class="ac-born">📅 ${fmtDate(bd)} 출생</div>
+    </div>`;
+  }).join("");
 }
 function renderRec6(){
   const html = babies.map((b,i)=>{
