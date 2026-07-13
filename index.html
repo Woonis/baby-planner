@@ -128,6 +128,18 @@ header .sub { color: #9c6b48; font-size: 14px; margin-top: 6px; }
 .tabsettings .ts-always { font-size:11px; color:#a08a78; background:#efe6da; border-radius:8px; padding:1px 7px; }
 .reco-mark { font-size:11px; font-weight:700; color:#fff; background:#e8843c; border-radius:8px; padding:1px 7px; }
 .reco-mark.vac { background:#c0502e; }
+/* 기록 입력 기본값 설정 */
+.recdef-title { font-size:14px; font-weight:800; color:#6b4226; margin:22px 0 2px; }
+.recdef-desc { font-size:12px; color:#a08a78; margin-bottom:10px; }
+.recdef { background:#fbf3ec; border-radius:12px; padding:8px 14px; }
+.rd-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid #efe2d3; }
+.rd-row:last-child { border-bottom:none; }
+.rd-lbl { flex:1; font-size:13.5px; font-weight:700; color:#4a3f34; }
+.rd-stepper { display:flex; align-items:center; gap:10px; }
+.rd-stepper button { width:30px; height:30px; border-radius:8px; border:none; background:#f0904a; color:#fff; font-size:16px; font-weight:800; cursor:pointer; line-height:1; }
+.rd-stepper button:active { transform:scale(.92); }
+.rd-stepper span { min-width:30px; text-align:center; font-size:15px; font-weight:800; color:#6b4226; }
+.rd-unit { font-size:12px; color:#a08a78; min-width:20px; }
 .applied {
   display: none; margin-top: 12px; background: #e8f5e9; color: #3a8a3e;
   border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600;
@@ -663,6 +675,36 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
           <label class="ts-opt"><input type="checkbox" id="tabchk-growth" onchange="toggleTabVis('growth',this.checked)"> 📈 성장 기록</label>
           <label class="ts-opt"><input type="checkbox" id="tabchk-vaccine" onchange="toggleTabVis('vaccine',this.checked)"> 💉 예방접종 <span id="vacRecoMark"></span></label>
           <label class="ts-opt"><input type="checkbox" id="tabchk-food" onchange="toggleTabVis('food',this.checked)"> 🍚 이유식 <span id="foodRecoMark"></span></label>
+        </div>
+
+        <div class="recdef-title">⚙️ 기록 입력 기본값</div>
+        <div class="recdef-desc">데일리 기록에서 각 버튼을 누를 때 미리 채워질 기본값이에요.</div>
+        <div class="recdef">
+          <div class="rd-row">
+            <div class="rd-lbl">🤱 모유 · 왼쪽</div>
+            <div class="rd-stepper"><button onclick="adjRecDefault('breastLeft',-1)">−</button><span id="defBreastLeft">10</span><button onclick="adjRecDefault('breastLeft',1)">＋</button></div>
+            <div class="rd-unit">분</div>
+          </div>
+          <div class="rd-row">
+            <div class="rd-lbl">🤱 모유 · 오른쪽</div>
+            <div class="rd-stepper"><button onclick="adjRecDefault('breastRight',-1)">−</button><span id="defBreastRight">10</span><button onclick="adjRecDefault('breastRight',1)">＋</button></div>
+            <div class="rd-unit">분</div>
+          </div>
+          <div class="rd-row">
+            <div class="rd-lbl">🍼 분유 · 양</div>
+            <div class="rd-stepper"><button onclick="adjRecDefault('formulaMl',-5)">−</button><span id="defFormulaMl">60</span><button onclick="adjRecDefault('formulaMl',5)">＋</button></div>
+            <div class="rd-unit">ml</div>
+          </div>
+          <div class="rd-row">
+            <div class="rd-lbl">☀️ 낮잠 · 기본</div>
+            <div class="rd-stepper"><button onclick="adjRecDefault('napMin',-10)">−</button><span id="defNapMin">30</span><button onclick="adjRecDefault('napMin',10)">＋</button></div>
+            <div class="rd-unit">분</div>
+          </div>
+          <div class="rd-row">
+            <div class="rd-lbl">🌙 밤잠 · 기본</div>
+            <div class="rd-stepper"><button onclick="adjRecDefault('nightMin',-10)">−</button><span id="defNightMin">60</span><button onclick="adjRecDefault('nightMin',10)">＋</button></div>
+            <div class="rd-unit">분</div>
+          </div>
         </div>
       </div>
 
@@ -1840,6 +1882,7 @@ function goSet(name){
   curSet = name;
   document.querySelectorAll('.settab').forEach(t=>t.classList.toggle('active', t.dataset.set===name));
   document.querySelectorAll('.setpage').forEach(p=>p.classList.toggle('active', p.id==="set-"+name));
+  if(name==="tabs") renderRecDefaults();
 }
 function relockTabs(){
   tabsUnlocked = false;
@@ -2442,6 +2485,21 @@ function toggleGuide(){
   localStorage.setItem("babyplanner_guide_collapsed", guideCollapsed ? "1" : "0");
   renderDaily();
 }
+// ----- 기록 입력 기본값(설정 > 메뉴 설정에서 조정) -----
+const DEFKEY = "babyplanner_recdefaults_v1";
+let recDefaults = { breastLeft:10, breastRight:10, formulaMl:60, napMin:30, nightMin:60 };
+try { const d=JSON.parse(localStorage.getItem(DEFKEY)); if(d) recDefaults=Object.assign(recDefaults,d); } catch(e){}
+function saveRecDefaults(){ localStorage.setItem(DEFKEY, JSON.stringify(recDefaults)); }
+function setRecDefault(key, val){
+  val = Math.max(0, Math.round(val));
+  recDefaults[key] = val; saveRecDefaults(); renderRecDefaults();
+}
+function adjRecDefault(key, delta){ setRecDefault(key, (recDefaults[key]||0)+delta); }
+// 설정 화면의 기본값 표시 갱신
+function renderRecDefaults(){
+  const map = { breastLeft:"defBreastLeft", breastRight:"defBreastRight", formulaMl:"defFormulaMl", napMin:"defNapMin", nightMin:"defNightMin" };
+  Object.keys(map).forEach(k=>{ const el=document.getElementById(map[k]); if(el) el.textContent=recDefaults[k]; });
+}
 let recType = null;             // 현재 입력 종류
 let recState = {};              // 모달 입력 상태
 
@@ -2505,16 +2563,16 @@ function openRec(type){
   document.getElementById("recMemo").value = "";
   const f = document.getElementById("recFields");
   if(type==="breast"){
-    recState = {left:10, right:10};
+    recState = {left:recDefaults.breastLeft, right:recDefaults.breastRight};
     f.innerHTML = `<div class="mlabel">수유 시간(분)</div>
       <div class="rec-two">
-        <div><div class="rt-lbl">왼쪽 가슴</div><div class="rec-num"><button onclick="recAdj('left',-1)">−</button><span class="rec-val" id="recLeft">10</span><button onclick="recAdj('left',1)">＋</button></div><div class="rt-lbl">분</div></div>
-        <div><div class="rt-lbl">오른쪽 가슴</div><div class="rec-num"><button onclick="recAdj('right',-1)">−</button><span class="rec-val" id="recRight">10</span><button onclick="recAdj('right',1)">＋</button></div><div class="rt-lbl">분</div></div>
+        <div><div class="rt-lbl">왼쪽 가슴</div><div class="rec-num"><button onclick="recAdj('left',-1)">−</button><span class="rec-val" id="recLeft">${recState.left}</span><button onclick="recAdj('left',1)">＋</button></div><div class="rt-lbl">분</div></div>
+        <div><div class="rt-lbl">오른쪽 가슴</div><div class="rec-num"><button onclick="recAdj('right',-1)">−</button><span class="rec-val" id="recRight">${recState.right}</span><button onclick="recAdj('right',1)">＋</button></div><div class="rt-lbl">분</div></div>
       </div>`;
   } else if(type==="formula"){
-    recState = {ml:60};
+    recState = {ml:recDefaults.formulaMl};
     f.innerHTML = `<div class="mlabel">먹은 양(ml)</div>
-      <div class="rec-num"><button onclick="recAdj('ml',-5)">−</button><span class="rec-val" id="recMl">60</span><button onclick="recAdj('ml',5)">＋</button></div>`;
+      <div class="rec-num"><button onclick="recAdj('ml',-5)">−</button><span class="rec-val" id="recMl">${recState.ml}</span><button onclick="recAdj('ml',5)">＋</button></div>`;
   } else if(type==="diaper"){
     recState = {kind:"pee", color:null};
     f.innerHTML = `<div class="mlabel">종류</div>
@@ -2531,11 +2589,13 @@ function openRec(type){
         <div class="stool-info" id="recStoolInfo"></div>
       </div>`;
   } else if(type==="sleep"){
-    recState = {mins:30, nap:napTypeOf(Date.now())};
+    const napType = napTypeOf(Date.now());
+    const defMin = napType==="night" ? recDefaults.nightMin : recDefaults.napMin;
+    recState = {mins:defMin, nap:napType};
     f.innerHTML = `<div class="mlabel">잔 시간</div>
       <div class="rec-two">
-        <div><div class="rt-lbl">시간</div><div class="rec-num"><button onclick="recAdj('h',-1)">−</button><span class="rec-val" id="recH">0</span><button onclick="recAdj('h',1)">＋</button></div></div>
-        <div><div class="rt-lbl">분</div><div class="rec-num"><button onclick="recAdj('m',-10)">−</button><span class="rec-val" id="recM">30</span><button onclick="recAdj('m',10)">＋</button></div></div>
+        <div><div class="rt-lbl">시간</div><div class="rec-num"><button onclick="recAdj('h',-1)">−</button><span class="rec-val" id="recH">${Math.floor(defMin/60)}</span><button onclick="recAdj('h',1)">＋</button></div></div>
+        <div><div class="rt-lbl">분</div><div class="rec-num"><button onclick="recAdj('m',-10)">−</button><span class="rec-val" id="recM">${defMin%60}</span><button onclick="recAdj('m',10)">＋</button></div></div>
       </div>
       <div class="mlabel">타입 (시작 시각 기준 자동, 바꿀 수 있어요)</div>
       <div class="rec-seg" id="recNap">
@@ -2601,6 +2661,14 @@ function recPick(key,val){
   const box = document.getElementById(boxId);
   if(box) box.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.k===val));
   if(key==="mkind") updateMedInfo(val);
+  // 잠 타입을 바꾸면 해당 타입의 기본 시간으로 자동 채움
+  if(key==="nap"){
+    const defMin = val==="night" ? recDefaults.nightMin : recDefaults.napMin;
+    recState.mins = defMin;
+    const hEl=document.getElementById("recH"), mEl=document.getElementById("recM");
+    if(hEl) hEl.textContent = Math.floor(defMin/60);
+    if(mEl) mEl.textContent = defMin%60;
+  }
 }
 // 해열제 계열 선택 시 체중 기반 용량·간격 안내
 function updateMedInfo(kind){
@@ -3090,15 +3158,35 @@ function buildDayClock(recs){
     const [sx,sy]=pt(a0,rr), [ex,ey]=pt(a1,rr);
     arcs += `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} A${rr},${rr} 0 ${large} 1 ${ex.toFixed(1)},${ey.toFixed(1)}" fill="none" stroke="${REC_META.sleep.color}" stroke-width="9" stroke-linecap="round" opacity="0.85"/>`;
   });
-  // 점: 모유·분유·기저귀·체온·투약
+  // 칸(부채꼴): 모유·분유·기저귀·체온·투약 — 해당 30분 칸을 안쪽 원~바깥 테두리까지 꽉 채움
   let dots="";
-  const dotRadius = { breast:R-16, formula:R-30, diaper:R-44, temp:R-58, med:R-58 };
+  const SEG_MIN = 30;                 // 한 칸 = 30분
+  const rOut = R, rIn = rInner;       // 부채꼴 반경 범위(고리 전체)
+  // 30분 칸(slot)별로 기록을 모아, 같은 칸에 여러 종류면 부채꼴을 나눠 칠함
+  const slots = {};
   recs.filter(r=>r.type!=="sleep").forEach(r=>{
-    const deg=ang(r.ts);
-    const rr = dotRadius[r.type] || (R-30);
-    const [x,y]=pt(deg,rr);
-    const col = (REC_META[r.type]||{}).color || "#888";
-    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="${col}" stroke="#fff" stroke-width="1.5"><title>${hmText(r.ts)} ${recMainText(r).replace(/<[^>]+>/g,"")}</title></circle>`;
+    const d0=new Date(r.ts);
+    const slot = Math.floor((d0.getHours()*60 + d0.getMinutes())/SEG_MIN)*SEG_MIN;
+    (slots[slot] = slots[slot] || []).push(r);
+  });
+  const wedge = (a0,a1,ri,ro,col,title)=>{
+    const [x0o,y0o]=pt(a0,ro), [x1o,y1o]=pt(a1,ro);
+    const [x1i,y1i]=pt(a1,ri), [x0i,y0i]=pt(a0,ri);
+    return `<path d="M${x0o.toFixed(1)},${y0o.toFixed(1)} A${ro},${ro} 0 0 1 ${x1o.toFixed(1)},${y1o.toFixed(1)} L${x1i.toFixed(1)},${y1i.toFixed(1)} A${ri},${ri} 0 0 0 ${x0i.toFixed(1)},${y0i.toFixed(1)} Z" fill="${col}" stroke="#fff" stroke-width="1"><title>${title}</title></path>`;
+  };
+  Object.keys(slots).forEach(sk=>{
+    const slot=+sk;
+    const a0=(slot/1440)*360-90, a1=((slot+SEG_MIN)/1440)*360-90;
+    // 같은 칸의 서로 다른 종류(중복 제거)만 반경으로 분할
+    const kinds=[...new Set(slots[slot].map(r=>r.type))];
+    const band=(rOut-rIn)/kinds.length;
+    kinds.forEach((k,ki)=>{
+      const col=(REC_META[k]||{}).color||"#888";
+      const ri=rIn+band*ki, ro=rIn+band*(ki+1);
+      const recsHere=slots[slot].filter(r=>r.type===k);
+      const title=recsHere.map(r=>`${hmText(r.ts)} ${recMainText(r).replace(/<[^>]+>/g,"")}`).join(" / ");
+      dots += wedge(a0,a1,ri,ro,col,title);
+    });
   });
   // 범례 (그날 등장한 종류만)
   const kinds=[...new Set(recs.map(r=>r.type))];
