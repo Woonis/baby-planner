@@ -602,6 +602,28 @@ footer { text-align: center; margin-top: 40px; font-size: 12px; color: #b0a294; 
 .rec-two { display:flex; gap:12px; }
 .rec-two > div { flex:1; }
 .rec-two .rt-lbl { font-size:12px; color:#8a7868; font-weight:700; text-align:center; margin-bottom:4px; }
+/* 가로 스크롤 시간 선택기 */
+.tpick { display:flex; flex-direction:column; gap:14px; margin:8px 0 4px; }
+.tpick-side { position:relative; }
+.tpick-head { font-size:13px; color:#7a5c48; font-weight:700; text-align:center; margin-bottom:6px; }
+.tpick-head b { font-size:20px; color:var(--tc,#ef8aa0); margin:0 3px; }
+.tp-note { font-size:11.5px; color:#a08a78; text-align:center; margin-top:8px; }
+.tp-scroll {
+  display:flex; align-items:flex-end; gap:0; overflow-x:auto; overflow-y:hidden;
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  height:56px; background:#faf4ee; border-radius:12px; padding:0;
+  scrollbar-width:none;
+}
+.tp-scroll::-webkit-scrollbar { display:none; }
+.tp-pad { flex:0 0 calc(50% - 17px); }
+.tp-tick { flex:0 0 34px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; scroll-snap-align:center; position:relative; padding-bottom:8px; }
+.tp-tick .tp-mark { width:2px; height:12px; background:#d8c6b4; border-radius:2px; }
+.tp-tick.big .tp-mark { height:20px; background:#b79c82; }
+.tp-tick .tp-num { font-size:11px; color:#a08a78; margin-top:3px; font-weight:700; }
+.tp-tick.sel .tp-mark { background:var(--tc,#ef8aa0); width:3px; }
+.tp-tick.sel .tp-num { color:var(--tc,#ef8aa0); font-weight:800; }
+.tp-wrap { position:relative; }
+.tp-cursor { position:absolute; left:50%; top:6px; transform:translateX(-50%); width:3px; height:30px; background:var(--tc,#ef8aa0); border-radius:2px; pointer-events:none; box-shadow:0 0 0 4px rgba(239,138,160,.15); z-index:2; }
 .rec-colors { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0; }
 .rec-color { width:38px; height:38px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px #e3d3c4; cursor:pointer; }
 .rec-color.on { box-shadow:0 0 0 3px #e8843c; transform:scale(1.05); }
@@ -2552,6 +2574,54 @@ function agoText(ms){
 function hmText(ms){ const d=new Date(ms); return `${d.getHours()>=12?'오후':'오전'} ${((d.getHours()%12)||12)}:${pad2(d.getMinutes())}`; }
 function napTypeOf(ms){ const h=new Date(ms).getHours(); return (h>=19 || h<6) ? "night" : "day"; }
 
+/* ----- 가로 스크롤 눈금 선택기(범용) ----- */
+const TPICK_STEP = 34;              // 눈금 한 칸 px
+const TPICK_CFG = {};               // id별 설정 {min,max,step,stateKey,labelId,bigEvery}
+// id: 선택기 식별자, cfg: {min,max,step,stateKey,labelId,bigEvery}
+function pickerHTML(id, val, cfg){
+  TPICK_CFG[id] = cfg;
+  let ticks = "";
+  for(let v=cfg.min; v<=cfg.max; v+=cfg.step){
+    const idx = Math.round((v-cfg.min)/cfg.step);
+    const big = (idx % (cfg.bigEvery||5) === 0);
+    ticks += `<div class="tp-tick ${big?'big':''}" data-v="${v}"><span class="tp-mark"></span>${big?`<span class="tp-num">${v}</span>`:""}</div>`;
+  }
+  return `<div class="tp-wrap">
+      <div class="tp-scroll" id="tp-${id}" data-id="${id}" onscroll="tpOnScroll('${id}')">
+        <div class="tp-pad"></div>${ticks}<div class="tp-pad"></div>
+      </div>
+      <div class="tp-cursor"></div>
+    </div>`;
+}
+function initPicker(id, val){
+  const sc = document.getElementById("tp-"+id); const cfg = TPICK_CFG[id];
+  if(!sc || !cfg) return;
+  const idx = Math.round((val-cfg.min)/cfg.step);
+  sc.scrollLeft = idx * TPICK_STEP;
+  tpHighlight(id, val);
+}
+let _tpRaf = {};
+function tpOnScroll(id){
+  const sc = document.getElementById("tp-"+id); const cfg = TPICK_CFG[id];
+  if(!sc || !cfg) return;
+  cancelAnimationFrame(_tpRaf[id]);
+  _tpRaf[id] = requestAnimationFrame(()=>{
+    let idx = Math.round(sc.scrollLeft / TPICK_STEP);
+    let v = cfg.min + idx*cfg.step;
+    v = Math.max(cfg.min, Math.min(cfg.max, v));
+    recState[cfg.stateKey] = v;
+    const lbl = document.getElementById(cfg.labelId);
+    if(lbl) lbl.textContent = v;
+    if(cfg.onChange) cfg.onChange(v);
+    tpHighlight(id, v);
+  });
+}
+function tpHighlight(id, v){
+  const sc = document.getElementById("tp-"+id);
+  if(!sc) return;
+  sc.querySelectorAll(".tp-tick").forEach(t=>t.classList.toggle("sel", +t.dataset.v===v));
+}
+
 /* ----- 입력 모달 ----- */
 function openRec(type){
   recType = type; recState = {};
@@ -2564,15 +2634,31 @@ function openRec(type){
   const f = document.getElementById("recFields");
   if(type==="breast"){
     recState = {left:recDefaults.breastLeft, right:recDefaults.breastRight};
-    f.innerHTML = `<div class="mlabel">수유 시간(분)</div>
-      <div class="rec-two">
-        <div><div class="rt-lbl">왼쪽 가슴</div><div class="rec-num"><button onclick="recAdj('left',-1)">−</button><span class="rec-val" id="recLeft">${recState.left}</span><button onclick="recAdj('left',1)">＋</button></div><div class="rt-lbl">분</div></div>
-        <div><div class="rt-lbl">오른쪽 가슴</div><div class="rec-num"><button onclick="recAdj('right',-1)">−</button><span class="rec-val" id="recRight">${recState.right}</span><button onclick="recAdj('right',1)">＋</button></div><div class="rt-lbl">분</div></div>
+    f.innerHTML = `<div class="mlabel">수유 시간(분) · 좌우로 밀어서 선택</div>
+      <div class="tpick">
+        <div class="tpick-side" style="--tc:#ef8aa0">
+          <div class="tpick-head">🤱 왼쪽 <b id="recLeft">${recState.left}</b>분</div>
+          ${pickerHTML('left', recState.left, {min:0,max:20,step:1,stateKey:'left',labelId:'recLeft'})}
+        </div>
+        <div class="tpick-side" style="--tc:#e0679e">
+          <div class="tpick-head">🤱 오른쪽 <b id="recRight">${recState.right}</b>분</div>
+          ${pickerHTML('right', recState.right, {min:0,max:20,step:1,stateKey:'right',labelId:'recRight'})}
+        </div>
       </div>`;
+    setTimeout(()=>{ initPicker('left', recState.left); initPicker('right', recState.right); }, 0);
   } else if(type==="formula"){
-    recState = {ml:recDefaults.formulaMl};
-    f.innerHTML = `<div class="mlabel">먹은 양(ml)</div>
-      <div class="rec-num"><button onclick="recAdj('ml',-5)">−</button><span class="rec-val" id="recMl">${recState.ml}</span><button onclick="recAdj('ml',5)">＋</button></div>`;
+    const mlMax = formulaMaxMl();
+    const mlVal = Math.min(recDefaults.formulaMl, mlMax);
+    recState = {ml:mlVal};
+    f.innerHTML = `<div class="mlabel">먹은 양(ml) · 좌우로 밀어서 선택</div>
+      <div class="tpick">
+        <div class="tpick-side" style="--tc:#f0b23c">
+          <div class="tpick-head">🍼 <b id="recMl">${mlVal}</b>ml</div>
+          ${pickerHTML('ml', mlVal, {min:0,max:mlMax,step:10,stateKey:'ml',labelId:'recMl',bigEvery:5})}
+        </div>
+      </div>
+      <div class="tp-note">최대 ${mlMax}ml (1회 권장 최대 + 30ml)</div>`;
+    setTimeout(()=>initPicker('ml', mlVal), 0);
   } else if(type==="diaper"){
     recState = {kind:"pee", color:null};
     f.innerHTML = `<div class="mlabel">종류</div>
@@ -2592,16 +2678,19 @@ function openRec(type){
     const napType = napTypeOf(Date.now());
     const defMin = napType==="night" ? recDefaults.nightMin : recDefaults.napMin;
     recState = {mins:defMin, nap:napType};
-    f.innerHTML = `<div class="mlabel">잔 시간</div>
-      <div class="rec-two">
-        <div><div class="rt-lbl">시간</div><div class="rec-num"><button onclick="recAdj('h',-1)">−</button><span class="rec-val" id="recH">${Math.floor(defMin/60)}</span><button onclick="recAdj('h',1)">＋</button></div></div>
-        <div><div class="rt-lbl">분</div><div class="rec-num"><button onclick="recAdj('m',-10)">−</button><span class="rec-val" id="recM">${defMin%60}</span><button onclick="recAdj('m',10)">＋</button></div></div>
+    f.innerHTML = `<div class="mlabel">잔 시간(분) · 좌우로 밀어서 선택</div>
+      <div class="tpick">
+        <div class="tpick-side" style="--tc:#8a7dc4">
+          <div class="tpick-head">😴 <b id="recMins">${defMin}</b>분 <span id="recMinsHM" style="color:#a08a78;font-size:12px">(${durText(defMin)})</span></div>
+          ${pickerHTML('mins', defMin, {min:0,max:360,step:5,stateKey:'mins',labelId:'recMins',bigEvery:6,onChange:v=>{const el=document.getElementById('recMinsHM'); if(el) el.textContent='('+durText(v)+')';}})}
+        </div>
       </div>
       <div class="mlabel">타입 (시작 시각 기준 자동, 바꿀 수 있어요)</div>
       <div class="rec-seg" id="recNap">
         <button data-k="day" class="${recState.nap==='day'?'on':''}" onclick="recPick('nap','day')">낮잠</button>
         <button data-k="night" class="${recState.nap==='night'?'on':''}" onclick="recPick('nap','night')">밤잠</button>
       </div>`;
+    setTimeout(()=>initPicker('mins', defMin), 0);
   } else if(type==="temp"){
     recState = {temp:37.0};
     f.innerHTML = `<div class="mlabel">체온(°C)</div>
@@ -2665,9 +2754,9 @@ function recPick(key,val){
   if(key==="nap"){
     const defMin = val==="night" ? recDefaults.nightMin : recDefaults.napMin;
     recState.mins = defMin;
-    const hEl=document.getElementById("recH"), mEl=document.getElementById("recM");
-    if(hEl) hEl.textContent = Math.floor(defMin/60);
-    if(mEl) mEl.textContent = defMin%60;
+    const lbl=document.getElementById("recMins"); if(lbl) lbl.textContent=defMin;
+    const hm=document.getElementById("recMinsHM"); if(hm) hm.textContent="("+durText(defMin)+")";
+    initPicker('mins', defMin);
   }
 }
 // 해열제 계열 선택 시 체중 기반 용량·간격 안내
@@ -2784,6 +2873,21 @@ function feedGuideByAge(am){
   if(am<3)   return {term:"3~4시간", cnt:"5~6회", ml:"120~180ml", cntMin:5, cntMax:6};
   if(am<6)   return {term:"3~4시간", cnt:"4~5회", ml:"150~200ml", cntMin:4, cntMax:5};
   return null; // 이유식기
+}
+// 분유 선택기 상한 = 1회 최대량 + 30ml (10단위 올림). 몸무게 있으면 체중×20+20, 없으면 월령 권장 상한 사용
+function formulaMaxMl(){
+  const baby = babies[activeBabyIdx] || babies[0];
+  let onceMax = 0;
+  const bg = (typeof growth!=="undefined" && baby) ? growth.filter(g=>g.babyId===baby.id && g.weight!=null).sort((a,b)=>a.date<b.date?1:-1)[0] : null;
+  if(bg){ onceMax = Math.round(bg.weight*20) + 20; }         // 체중 기반 1회 최대치
+  else if(baby){                                              // 월령 권장 표의 상한
+    const dm = diffMonthsDays(parseDate(baby.birth), new Date());
+    const g = feedGuideByAge(dm.months + dm.days/30.4375);
+    if(g){ const m=g.ml.match(/(\d+)~(\d+)/); if(m) onceMax = +m[2]; }
+  }
+  if(!onceMax) onceMax = 200;                                 // 기본값(이유식기 등)
+  const cap = onceMax + 30;
+  return Math.ceil(cap/10)*10;                                // 10단위로 올림
 }
 function renderDaily(){
   if(!document.getElementById("drRecent")) return;
