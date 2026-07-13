@@ -1,8 +1,8 @@
-# baby-planner
-아기 플래너
+# BeBeLove
+우리 아기 플래너
 
 # 홈화면에 추가 방법
-1. https://woonis.github.io/baby-planner/index.html 을 사파리에서 엽니다.
+1. https://woonis.github.io/be-be-love 을 사파리에서 엽니다.
 2. 하단 가운데 공유하기 버튼을 클릭합니다.
 3. View More버튼을 클릭하여, "홈 화면에 추가"를 통해 페이지 링크를 홈화면에 추가합니다.
 
